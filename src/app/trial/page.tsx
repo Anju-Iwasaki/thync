@@ -9,7 +9,7 @@ const supabase = createClient(
 
 type Row = { id: number; body: string; tag: string | null };
 export default function Trial() {
-    const [rows, setTows] + useState<Row[]>([]);
+    const [rows, setRows] = useState<Row[]>([]);
     const [body, setBody] = useState('');
     const [tag, setTag] = useState('');
     const [log, setLog] = useState('');
@@ -18,9 +18,10 @@ export default function Trial() {
         supabase
             .from('trial_messages')
             .select('*')
-            .order(({ data, error }) => {
+            .order('id')
+            .then(({ data, error }) => {
                 setLog(JSON.stringify({ data, error}));
-                if (data) setTows(data);
+                if (data) setRows(data);
             });
 
         const channel = supabase
@@ -30,7 +31,7 @@ export default function Trial() {
                 { event: 'INSERT', schema: 'public', table: 'trial_messages' },
                 (payload) => setRows((r) => [...r, payload.new as Row])
             )
-            .subsceibe();
+            .subscribe();
         
         return () => {
             supabase.removeChannel(channel);
@@ -41,7 +42,15 @@ export default function Trial() {
         const { error } = await supabase
             .from('trial_messages')
             .insert({ body, tag: tag || null });
-        setLog(error ? JSNO.stringify(error) : 'ok');
+        setLog(error ? JSON.stringify(error) : 'ok');
+    }
+
+    async function sendViaServer() {
+        const res = await fetch('/api/trial', {
+            method: 'POST',
+            body: JSON.stringify({ body }),
+        });
+        setLog(JSON.stringify(await res.json()));
     }
 
     return (
@@ -49,9 +58,10 @@ export default function Trial() {
             <input value={body} onChange={(e) => setBody(e.target.value)} placeholder="本文" />
             <input value={tag} onChange={(e) => setTag(e.target.value)} placeholder="tag（一意）" />
             <button onClick={send}>送信</button>
+            <button onClick={sendViaServer}>サーバー経由で送信</button>
             <ul>
                 {rows.map((r) => (
-                    <li key={r.id}>{r.id}: {r.bodu} ({r.tag ?? 'なし'}) </li>
+                    <li key={r.id}>{r.id}: {r.body} ({r.tag ?? 'なし'}) </li>
                 ))}
             </ul>
             <pre>{log}</pre>
