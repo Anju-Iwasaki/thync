@@ -1,15 +1,16 @@
-// 端末からDBへの書き込み　担当：岩崎
+// 端末からDBへの書き込み 担当：岩崎
+// 大槻はここの関数だけを呼ぶ。supabase を直接触らない
 import { supabase } from '@/lib/supabase/browser';
 import type { Message } from '@/types/rows';
 import type { ReactionValue } from '@/types/domain';
 
 // サーバーの受付を呼ぶ。分析が終わるのは待たない
 // （結果の付箋は Realtime で全員に届くので、ここで受け取る必要がない）
-function requestAnalysis(messageId: string): void {
+function requestAnalysis(messageId: string, cause: 'send' | 'react'): void {
   fetch('/api/enqueue', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ messageId }),
+    body: JSON.stringify({ messageId, cause }),
   }).catch((e) => console.warn('enqueue に失敗', e));
 }
 
@@ -28,7 +29,7 @@ export async function sendMessage(
   if (error) throw error;
 
   // 積むかどうかはサーバーが方式を見て決める。端末は毎回呼ぶだけ
-  requestAnalysis(data.id);
+  requestAnalysis(data.id, 'send');
   return data;
 }
 
@@ -44,7 +45,7 @@ export async function react(
   if (error) throw error;
 
   // 2人目以降はサーバー側の一意制約で弾かれるので、最初の反応かはここで判定しない
-  requestAnalysis(messageId);
+  requestAnalysis(messageId, 'react');
 }
 
 export async function unreact(messageId: string, memberId: string): Promise<void> {
