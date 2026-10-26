@@ -1,84 +1,28 @@
 'use client';
 // 骨組み確認用の仮画面
-// TalkRoom、森のBoardができたら差し替える
+// 確認しやすいように3つを横に並べている。本番のタブ分けは大槻の担当
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase/browser';
 import { sendMessage, react, unreact, retractMessage } from '@/client/actions';
-import type { Member, Message, Note, Reaction, Room } from '@/types/rows';
+import { useRoom } from '@/client/useRoom';
+import type { Message } from '@/types/rows';
 import type { ReactionValue } from '@/types/domain';
 
 const memberKey = (roomId: string) => `thync:member:${roomId}`;
 
-function upsertById<T extends { id: string }>(list: T[], row: T): T[] {
-  return list.some((x) => x.id === row.id)
-    ? list.map((x) => (x.id === row.id ? row : x))
-    : [...list, row];
-}
-
 export default function RoomDev({ roomId }: { roomId: string }) {
-  const [room, setRoom] = useState<Room | null>(null);
-  const [members, setMembers] = useState<Member[]>([]);
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [reactions, setReactions] = useState<Reaction[]>([]);
-  const [notes, setNotes] = useState<Note[]>([]);
+  const { room, members, messages, reactions, notes, error } = useRoom(roomId);
   const [memberId, setMemberId] = useState<string | null>(null);
   const [nickname, setNickname] = useState('');
   const [body, setBody] = useState('');
   const [replyTo, setReplyTo] = useState<Message | null>(null);
   const [log, setLog] = useState('');
 
+  // 自分のメンバーIDはタブごとに覚える
   useEffect(() => {
-    // 自分のメンバーIDはタブごとに覚える（通常ウィンドウとシークレットで別人になる）
     try {
       setMemberId(sessionStorage.getItem(memberKey(roomId)));
     } catch {}
-
-    // 最初の読み込み
-    (async () => {
-      const [r, m, msg, n] = await Promise.all([
-        supabase.from('rooms').select('*').eq('id', roomId).single(),
-        supabase.from('members').select('*').eq('room_id', roomId),
-        supabase.from('messages').select('*').eq('room_id', roomId).order('created_at'),
-        supabase.from('notes').select('*').eq('room_id', roomId).order('created_at'),
-      ]);
-      if (r.error) return setLog(JSON.stringify(r.error));
-      setRoom(r.data);
-      setMembers(m.data ?? []);
-      setMessages(msg.data ?? []);
-      setNotes(n.data ?? []);
-      // reactions には room_id がないので、この部屋の発言のIDで絞る
-      const ids = (msg.data ?? []).map((x) => x.id);
-      if (ids.length) {
-        const re = await supabase.from('reactions').select('*').in('message_id', ids);
-        setReactions(re.data ?? []);
-      }
-    })();
-
-    // Realtime。DELETE のイベントは主キーしか届かず、絞り込みもできないので部屋で絞らない
-    const channel = supabase
-      .channel(`room:${roomId}`)
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'rooms', filter: `id=eq.${roomId}` },
-        (p) => setRoom(p.new as Room))
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'members', filter: `room_id=eq.${roomId}` },
-        (p) => setMembers((l) => upsertById(l, p.new as Member)))
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'messages', filter: `room_id=eq.${roomId}` },
-        (p) => p.eventType !== 'DELETE' && setMessages((l) => upsertById(l, p.new as Message)))
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notes', filter: `room_id=eq.${roomId}` },
-        (p) => setNotes((l) => upsertById(l, p.new as Note)))
-      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'notes' },
-        (p) => setNotes((l) => l.filter((x) => x.id !== (p.old as { id: string }).id)))
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'reactions' }, (p) => {
-        const key = (p.eventType === 'DELETE' ? p.old : p.new) as Reaction;
-        setReactions((l) => {
-          const rest = l.filter((x) => !(x.message_id === key.message_id && x.member_id === key.member_id));
-          return p.eventType === 'DELETE' ? rest : [...rest, p.new as Reaction];
-        });
-      })
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
   }, [roomId]);
 
   // 失敗はログ欄に出す
@@ -116,7 +60,7 @@ export default function RoomDev({ roomId }: { roomId: string }) {
   const children = (parentId: string | null, kind: string) =>
     notes.filter((n) => n.parent_id === parentId && n.kind === kind);
 
-  if (!room) return <main style={{ padding: 16 }}><p>部屋を読み込み中…</p><pre>{log}</pre></main>;
+  if (!room) return <main style={{ padding: 16 }}><p>部屋を読み込み中…</p><pre>{error ?? log}</pre></main>;
 
   if (!memberId) {
     return (
@@ -124,7 +68,7 @@ export default function RoomDev({ roomId }: { roomId: string }) {
         <h1>{room.topic}</h1>
         <input value={nickname} onChange={(e) => setNickname(e.target.value)} placeholder="ニックネーム" />
         <button onClick={join} disabled={!nickname.trim()}>参加</button>
-        <pre>{log}</pre>
+        <pre>{error ?? log}</pre>
       </main>
     );
   }
@@ -160,7 +104,7 @@ export default function RoomDev({ roomId }: { roomId: string }) {
         )}
         <input value={body} onChange={(e) => setBody(e.target.value)} placeholder="発言" />
         <button onClick={send}>送信</button>
-        <pre style={{ whiteSpace: 'pre-wrap' }}>{log}</pre>
+        <pre style={{ whiteSpace: 'pre-wrap' }}>{error ?? log}</pre>
       </section>
 
       <section>
@@ -183,7 +127,7 @@ export default function RoomDev({ roomId }: { roomId: string }) {
           ))}
         </ul>
         <h2>まとめ</h2>
-        <p>（まおの buildSummary ができたらここに出す）</p>
+        <p>（大槻の buildSummary ができたらここに出す）</p>
       </section>
     </main>
   );
