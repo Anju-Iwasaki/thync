@@ -1,7 +1,8 @@
 'use client';
-// 骨組み確認用の部屋作成
+// 骨組み確認用の部屋作成。src/app/page.tsxができたら消す
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { supabase } from '@/lib/supabase/browser';
 import { DEFAULT_ANALYSIS_MODE } from '@/constants';
 
@@ -27,6 +28,12 @@ export default function DevPage() {
       <button onClick={create} disabled={!topic.trim()}>作成</button>
       <p>方式：{DEFAULT_ANALYSIS_MODE}</p>
       <pre>{error}</pre>
+      <h2>部品の試しページ（見本データ）</h2>
+      <ul>
+        <li><Link href="/dev/board">ボード（森）</Link></li>
+        <li><Link href="/dev/talk">トーク（大槻）</Link></li>
+        <li><Link href="/dev/summary">まとめ（まお）</Link></li>
+      </ul>
     </main>
   );
 }
