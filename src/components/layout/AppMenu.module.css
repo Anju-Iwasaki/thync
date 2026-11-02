@@ -127,12 +127,61 @@
 
 /* アニメーションを減らす設定への対応 */
 
+
+/* デバッグ機能 */
+
+.debugSection {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--thync-border);
+}
+
+.debugActions {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.debugButton {
+    width: 100%;
+    padding: 10px 12px;
+
+    border: 1px solid var(--thync-border);
+    border-radius: 8px;
+
+    background: var(--thync-bg);
+    color: var(--thync-text);
+
+    font: inherit;
+    font-size: 11px;
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        background-color var(--thync-theme-duration) ease,
+        color var(--thync-theme-duration) ease,
+        border-color var(--thync-theme-duration) ease;
+}
+
+.debugButton:hover {
+    background: var(--thync-surface-hover);
+}
+
+.debugButton:focus-visible {
+    outline: 2px solid var(--thync-text);
+    outline-offset: 2px;
+}
+
+/* アニメーションを減らす設定 */
+
 @media (prefers-reduced-motion: reduce) {
 
     .menuButton,
     .popup,
     .themeButton,
-    .sectionTitle {
+    .sectionTitle,
+    .debugButton {
         transition: none;
     }
 }

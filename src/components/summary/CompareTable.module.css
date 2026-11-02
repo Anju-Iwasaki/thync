@@ -1,0 +1,70 @@
+.tableScroll {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--thync-border);
+    border-radius: 14px;
+    background: var(--thync-surface);
+}
+
+.table {
+    width: 100%;
+    min-width: 540px;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 13px;
+    color: var(--thync-text);
+}
+
+.table th,
+.table td {
+    padding: 15px 18px;
+    border-bottom: 1px solid var(--thync-border);
+    vertical-align: middle;
+}
+
+.table thead th {
+    background: var(--thync-surface-hover);
+    color: var(--thync-text-secondary);
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.table tbody th {
+    width: 42%;
+    font-weight: 600;
+    line-height: 1.6;
+}
+
+.table tbody tr:last-child th,
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background: var(--thync-surface-hover);
+}
+
+.number {
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.empty {
+    margin: 0;
+    padding: 24px;
+    color: var(--thync-text-muted);
+    font-size: 13px;
+    text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .table tbody tr {
+        transition: none;
+    }
+}

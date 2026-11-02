@@ -4,18 +4,27 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "./AppMenu.module.css";
 
+
 type Theme = "light" | "dark";
+
+export type DebugAction = {
+    label: string;
+    onClick: () => void;
+};
 
 type AppMenuProps = {
     theme: Theme;
     onThemeChange: (theme: Theme) => void;
+    debugActions?: DebugAction[];
 };
 
 
 export default function AppMenu({
     theme,
     onThemeChange,
+    debugActions = [],
 }: AppMenuProps) {
+
     const [isOpen, setIsOpen] = useState(false);
 
     // メニュー全体の要素を参照する
@@ -120,8 +129,33 @@ export default function AppMenu({
                         >
                             <span aria-hidden="true">☾</span>
                             <span>ダーク</span>
+
                         </button>
                     </div>
+
+                    {debugActions.length > 0 && (
+                        <div className={styles.debugSection}>
+                            <div className={styles.sectionTitle}>
+                                デバッグ
+                            </div>
+
+                            <div className={styles.debugActions}>
+                                {debugActions.map((action) => (
+                                    <button
+                                        key={action.label}
+                                        type="button"
+                                        className={styles.debugButton}
+                                        onClick={() => {
+                                            action.onClick();
+                                            setIsOpen(false);
+                                        }}
+                                    >
+                                        {action.label}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
             )}
         </div>
