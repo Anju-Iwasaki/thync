@@ -95,6 +95,141 @@
     white-space: pre-wrap;
 }
 
+/* =====================================
+   Talk - 賛成・反対リアクション
+   ===================================== */
+
+.bubbleStack {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 0;
+}
+
+.hasReactions {
+    padding-bottom: 0;
+}
+
+.mine .bubbleStack {
+    align-items: flex-end;
+}
+
+/* 吹き出しに3px程度だけ重ねる */
+.reactionBar {
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    margin-top: -3px;
+    margin-left: 12px;
+}
+
+.mine .reactionBar {
+    margin-left: 0;
+    margin-right: 12px;
+}
+
+
+.reactionButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    min-width: 60px;
+    height: 28px;
+    padding: 0 10px;
+
+    border: 1px solid var(--thync-border);
+    border-radius: 999px;
+
+    background: var(--thync-surface);
+    color: var(--thync-text-secondary);
+
+    font: inherit;
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1;
+
+    white-space: nowrap;
+    cursor: pointer;
+
+    transition:
+        background-color 0.18s ease,
+        border-color 0.18s ease,
+        transform 0.18s ease,
+        opacity 0.18s ease;
+}
+
+.reactionButton:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.reactionButton:active:not(:disabled) {
+    transform: scale(0.96);
+}
+
+.reactionButton:disabled {
+    cursor: default;
+    opacity: 0.6;
+}
+
+.reactionButton:focus-visible {
+    outline: 2px solid var(--thync-text-secondary);
+    outline-offset: 2px;
+}
+
+
+.reactionSymbol {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 20px;
+    height: 24px;
+
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 1;
+    overflow: visible;
+    -webkit-text-stroke: 0.5px currentColor;
+}
+
+.reactionDivider {
+    width: 1px;
+    height: 12px;
+    background: currentColor;
+    opacity: 0.3;
+}
+
+.reactionPro .reactionSymbol {
+    color: #C76D73;
+    -webkit-text-stroke: 0.8px currentColor;
+}
+
+.reactionCon .reactionSymbol {
+    color: #648DBD;
+}
+
+.reactionPro.reactionSelected {
+    background: rgba(199, 109, 115, 0.12);
+    border-color: rgba(199, 109, 115, 0.38);
+}
+
+.reactionCon.reactionSelected {
+    background: rgba(100, 141, 189, 0.12);
+    border-color: rgba(100, 141, 189, 0.38);
+}
+
+.reactionSelected {
+    font-weight: 700;
+}
+
+
 /* 時刻 */
 
 .time {
@@ -205,7 +340,7 @@
 }
 
 /* ダークモード */
-:global(.thync-shell[data-theme="dark"]) .highlighted .bubble {
+[data-theme="dark"] .highlighted .bubble {
     animation-name: thync-message-focus-dark;
 }
 

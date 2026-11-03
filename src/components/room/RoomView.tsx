@@ -1,15 +1,11 @@
 
 "use client";
 
-import { useState } from "react";
+import { roomPath } from "@/lib/client/roomRoutes";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { supabase } from "@/lib/supabase/browser";
-import { DEFAULT_ANALYSIS_MODE } from "@/constants";
-import {
-    getSavedMemberId,
-    saveMembership,
-} from "@/lib/client/roomMembership";
+import { createOrJoinRoom } from "@/lib/client/roomActions";
 
 import type {
     GroupAddRequest,
@@ -17,9 +13,7 @@ import type {
 
 import RoomMembershipGate from "../RoomMembershipGate";
 import AppShell from "../layout/AppShell";
-import Sidebar, {
-    type SidebarGroup,
-} from "../layout/Sidebar";
+import Sidebar from "../layout/Sidebar";
 import RoomHeader from "../layout/RoomHeader";
 import RoomTabs, {
     type RoomTab,
@@ -28,15 +22,26 @@ import RoomTabs, {
 import TalkRoom from "../talk/TalkRoom";
 import SummaryRoom from "../summary/SummaryRoom";
 
-import { sendMessage } from "@/client/actions";
+import {
+    sendMessage,
+    react,
+    unreact,
+    retractMessage,
+} from "@/client/actions";
+import type { ReactionValue } from "@/types/domain";
 import type { RoomData } from "@/client/useRoom";
 import { buildSummary } from "@/lib/summary/buildSummary";
+import { useJoinedRoomGroups } from "@/lib/client/useJoinedRoomGroups";
 
 type Props = {
     roomId: string;
 };
 
-export default function RoomLivePreview({
+// 同じブラウザタブ内で外観設定を共有する
+// グループ切替時にライトモードへ戻ることを防ぐ
+let cachedTheme: "light" | "dark" | null = null;
+
+export default function RoomView({
     roomId,
 }: Props) {
     return (
@@ -65,10 +70,62 @@ function RoomLiveContent({
     const router = useRouter();
 
     const [theme, setTheme] =
-        useState<"light" | "dark">("light");
+        useState<"light" | "dark">(
+            () => cachedTheme ?? "light"
+        );
+
+    // グループが変わるたびに共通の外観設定を反映する
+    useEffect(() => {
+        const timer = window.setTimeout(() => {
+            try {
+                const savedTheme = localStorage.getItem("thync:theme");
+
+                if (savedTheme === "light" || savedTheme === "dark") {
+                    cachedTheme = savedTheme;
+                    setTheme(savedTheme);
+                } else if (cachedTheme !== null) {
+                    setTheme(cachedTheme);
+                }
+            } catch {
+                if (cachedTheme !== null) {
+                    setTheme(cachedTheme);
+                }
+            }
+        }, 0);
+
+        return () => window.clearTimeout(timer);
+    }, [roomId]);
+
+    const handleThemeChange = (nextTheme: "light" | "dark") => {
+        // 次のグループでも最初から同じ外観を使用
+        cachedTheme = nextTheme;
+        setTheme(nextTheme);
+
+        try {
+            localStorage.setItem("thync:theme", nextTheme);
+        } catch {
+            // 保存できなくても画面上の切替は有効
+        }
+    };
 
     const [activeTab, setActiveTab] =
         useState<RoomTab>("talk");
+
+    const [shareUrl, setShareUrl] = useState<string | null>(null);
+
+    useEffect(() => {
+        const timer = window.setTimeout(() => {
+            // ブラウザ上で共有URLを生成する
+            const url = new URL(
+                roomPath(roomId),
+                window.location.origin
+            );
+
+            setShareUrl(url.toString());
+        }, 0);
+
+        return () => window.clearTimeout(timer);
+    }, [roomId]);
 
     const {
         room,
@@ -79,132 +136,22 @@ function RoomLiveContent({
         error,
     } = roomData;
 
-    // 現在のRoomをサイドバーに表示
-    const groups: SidebarGroup[] = room
-        ? [
-            {
-                id: roomId,
-                title: room.topic,
-                memberCount: members.length,
-                unreadCount: 0,
-            },
-        ]
-        : [];
+    // 参加済みの全Roomをサイドバーに表示
+    const groups = useJoinedRoomGroups(
+        roomId,
+        room?.topic ?? null,
+        members.length
+    );
 
 
-    // グループの新規作成・参加を実行
+    // グループの作成・参加は共通処理に委譲する
     const handleAddGroup = async (
         request: GroupAddRequest
     ) => {
-        let targetRoomId: string;
+        const targetRoomId = await createOrJoinRoom(request);
 
-        if (request.mode === "create") {
-            // 新しいRoomをSupabaseに登録
-            const { data, error } = await supabase
-                .from("rooms")
-                .insert({
-                    topic: request.topic,
-                    analysis_mode: DEFAULT_ANALYSIS_MODE,
-                })
-                .select()
-                .single();
-
-            if (error) {
-                throw new Error(
-                    `グループの作成に失敗しました: ${error.message}`
-                );
-            }
-
-            targetRoomId = data.id;
-        } else {
-            // 共有URLからRoomIDを取得
-            let parsed: URL;
-
-            try {
-                parsed = new URL(request.url);
-            } catch {
-                throw new Error("共有URLが正しくありません。");
-            }
-
-            // 現在のTHYNCと同じサイトのURLに限定
-            if (parsed.origin !== window.location.origin) {
-                throw new Error(
-                    "現在のTHYNCと同じサイトの共有URLを入力してください。"
-                );
-            }
-
-            const match = parsed.pathname.match(
-                /^\/(?:room|room-ui-preview)\/([0-9a-fA-F-]{36})\/?$/
-            );
-
-            if (!match) {
-                throw new Error(
-                    "THYNCのルーム共有URLを入力してください。"
-                );
-            }
-
-            targetRoomId = match[1];
-
-            // URLに対応するRoomが実在するか確認
-            const { data, error } = await supabase
-                .from("rooms")
-                .select("id")
-                .eq("id", targetRoomId)
-                .single();
-
-            if (error || !data) {
-                throw new Error(
-                    "指定されたグループが見つかりませんでした。"
-                );
-            }
-
-            // すでに参加している場合は既存のMemberIDを使う
-            if (getSavedMemberId(targetRoomId)) {
-                router.push(
-                    `/room-ui-preview/${targetRoomId}`
-                );
-                return;
-            }
-        }
-
-        // 作成した人も、参加する人もMember登録する
-        const { data: member, error: memberError } =
-            await supabase
-                .from("members")
-                .insert({
-                    room_id: targetRoomId,
-                    nickname: request.nickname,
-                })
-                .select()
-                .single();
-
-        if (memberError || !member) {
-            throw new Error(
-                "メンバー登録に失敗しました: " +
-                (memberError?.message ?? "不明なエラー")
-            );
-        }
-
-        // 今後の復元とサイドバー一覧用に保存
-        saveMembership(targetRoomId, member.id);
-
-        // ボスの旧デモ画面との互換性も維持
-        try {
-            sessionStorage.setItem(
-                `thync:member:${targetRoomId}`,
-                member.id
-            );
-        } catch {
-            // sessionStorageが使えなくても
-            // localStorage側の保存結果は維持する
-        }
-
-        // 作成・参加したRoomへ移動
-        router.push(
-            `/room-ui-preview/${targetRoomId}`
-        );
+        router.push(roomPath(targetRoomId));
     };
-
 
 
     // 本番のメッセージ送信
@@ -223,6 +170,33 @@ function RoomLiveContent({
         // ここで独自に追加しない。
     };
 
+    // 賛成・反対を切り替える
+    const handleReaction = async (
+        messageId: string,
+        value: ReactionValue
+    ) => {
+        const mine = reactions.find(
+            (reaction) =>
+                reaction.message_id === messageId &&
+                reaction.member_id === memberId
+        );
+
+        if (mine?.value === value) {
+            // 同じボタンを押したら投票取消
+            await unreact(messageId, memberId);
+        } else {
+            // 新規投票・投票変更
+            await react(messageId, memberId, value);
+        }
+
+        // 表示の更新はuseRoomのRealtimeに任せる
+    };
+
+    // 送信取消は既存APIを利用する
+    const handleRetract = async (messageId: string) => {
+        await retractMessage(messageId, memberId);
+    };
+
     // notes と reactions からSummaryを構成
     const summaryRows = buildSummary(
         notes,
@@ -236,11 +210,13 @@ function RoomLiveContent({
                 <Sidebar
                     groups={groups}
                     selectedGroupId={roomId}
-                    onSelectGroup={() => {
-                        // 複数Room切り替えは次の段階で実装
+                    onSelectGroup={(targetRoomId) => {
+                        if (targetRoomId !== roomId) {
+                            router.push(roomPath(targetRoomId));
+                        }
                     }}
                     theme={theme}
-                    onThemeChange={setTheme}
+                    onThemeChange={handleThemeChange}
                     onAddGroup={handleAddGroup}
                 />
             }
@@ -248,6 +224,7 @@ function RoomLiveContent({
                 <RoomHeader
                     title={room?.topic ?? "読み込み中"}
                     memberCount={members.length}
+                    shareUrl={shareUrl}
                 />
             }
             tabs={
@@ -276,6 +253,9 @@ function RoomLiveContent({
                     messages={messages}
                     members={members}
                     currentMemberId={memberId}
+                    reactions={reactions}
+                    onReaction={handleReaction}
+                    onRetract={handleRetract}
                     onSend={handleSend}
                 />
             ) : activeTab === "summary" ? (

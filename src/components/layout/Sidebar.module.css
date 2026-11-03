@@ -122,7 +122,7 @@
 
 /* ダークモード：自然な浮き上がり */
 
-:global(.thync-shell[data-theme="dark"]) .group.active {
+[data-theme="dark"] .group.active {
     background: #323232;
     border-color: #404040;
 
@@ -138,7 +138,7 @@
     background: var(--thync-surface-active);
 }
 
-:global(.thync-shell[data-theme="dark"]) .group.active:hover {
+[data-theme="dark"] .group.active:hover {
     background: #323232;
 }
 

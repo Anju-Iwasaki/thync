@@ -5,8 +5,8 @@ export type SummaryRow = {
   ideaId: string;         // notes.id
   label: string;
   proposerId: string;
-  pro: number;            // 発案者を除く
-  con: number;            // 発案者を除く
+  pro: number;            // 発案者を含む賛成票数
+  con: number;            // 発案者を含む反対票数
   reasons: string[];
   problems: {
     id: string;
@@ -25,7 +25,7 @@ export type SummaryRow = {
  *    └─ solution
  *
  * 賛否はideaの元メッセージへのリアクションから集計する。
- * 発案者自身の票は数えない。
+ * 発案者自身の票も含め、メンバーごとに1票として数える。
  */
 export function buildSummary(
   notes: Note[],
@@ -112,11 +112,6 @@ export function buildSummary(
     const votesByMember = new Map<string, string>();
 
     for (const reaction of ideaReactions) {
-      // 発案者本人の票は除外する
-      if (reaction.member_id === idea.proposer_id) {
-        continue;
-      }
-
       // 定義されている賛否のみ対象
       if (
         reaction.value !== "pro" &&
@@ -125,6 +120,7 @@ export function buildSummary(
         continue;
       }
 
+      // 発案者を含め、同じメンバーは1票として扱う
       votesByMember.set(
         reaction.member_id,
         reaction.value

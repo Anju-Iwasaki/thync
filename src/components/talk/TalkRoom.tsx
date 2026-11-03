@@ -11,7 +11,8 @@ import {
     type KeyboardEvent,
 } from "react";
 
-import type { Member, Message } from "@/types/rows";
+import type { Member, Message, Reaction } from "@/types/rows";
+import type { ReactionValue } from "@/types/domain";
 import MessageItem from "./MessageItem";
 import styles from "./TalkRoom.module.css";
 
@@ -21,6 +22,12 @@ type TalkRoomProps = {
     messages: Message[];
     members: Member[];
     currentMemberId: string;
+    onRetract?: (messageId: string) => Promise<void>;
+    reactions?: Reaction[];
+    onReaction?: (
+        messageId: string,
+        value: ReactionValue
+    ) => void | Promise<void>;
     onSend: (
         body: string,
         replyTo?: string
@@ -119,11 +126,18 @@ export default function TalkRoom({
     messages,
     members,
     currentMemberId,
+    onRetract,
+    reactions = [],
+    onReaction,
     onSend,
 }: TalkRoomProps) {
 
     const [input, setInput] = useState("");
     const [sending, setSending] = useState(false);
+    const [reactionBusyId, setReactionBusyId] =
+        useState<string | null>(null);
+    const [retractBusyId, setRetractBusyId] =
+        useState<string | null>(null);
     const [replyTo, setReplyTo] =
         useState<Message | null>(null);
 
@@ -179,34 +193,38 @@ export default function TalkRoom({
     useEffect(() => {
         if (draftLoaded) return;
 
-        try {
-            const saved = window.localStorage.getItem(
-                draftStorageKey
-            );
+        const timer = window.setTimeout(() => {
+            try {
+                const saved = window.localStorage.getItem(
+                    draftStorageKey
+                );
 
-            if (saved) {
-                const draft = JSON.parse(saved) as {
-                    body?: unknown;
-                    replyToId?: unknown;
-                };
+                if (saved) {
+                    const draft = JSON.parse(saved) as {
+                        body?: unknown;
+                        replyToId?: unknown;
+                    };
 
-                if (typeof draft.body === "string") {
-                    setInput(draft.body);
+                    if (typeof draft.body === "string") {
+                        setInput(draft.body);
+                    }
+
+                    if (typeof draft.replyToId === "string") {
+                        const originalMessage = messages.find(
+                            (message) => message.id === draft.replyToId
+                        );
+
+                        setReplyTo(originalMessage ?? null);
+                    }
                 }
-
-                if (typeof draft.replyToId === "string") {
-                    const originalMessage = messages.find(
-                        (message) => message.id === draft.replyToId
-                    );
-
-                    setReplyTo(originalMessage ?? null);
-                }
+            } catch (error) {
+                console.warn("下書きの復元に失敗:", error);
+            } finally {
+                setDraftLoaded(true);
             }
-        } catch (error) {
-            console.warn("下書きの復元に失敗:", error);
-        } finally {
-            setDraftLoaded(true);
-        }
+        }, 0);
+
+        return () => window.clearTimeout(timer);
     }, [draftStorageKey, draftLoaded, messages]);
 
     // 入力内容と返信先を自動保存
@@ -441,6 +459,25 @@ export default function TalkRoom({
         }
     };
 
+    // 賛成・反対の投票処理
+    const handleReaction = async (
+        messageId: string,
+        value: ReactionValue
+    ) => {
+        if (!onReaction || reactionBusyId) return;
+
+        setReactionBusyId(messageId);
+
+        try {
+            await onReaction(messageId, value);
+        } catch (error) {
+            console.error("リアクション失敗:", error);
+            showCopyNotice("リアクションに失敗しました");
+        } finally {
+            setReactionBusyId(null);
+        }
+    };
+
     // Enterは改行、Ctrl + Enterで送信
     const handleKeyDown = (
         event: KeyboardEvent<HTMLTextAreaElement>
@@ -471,7 +508,9 @@ export default function TalkRoom({
         y: number
     ) => {
         const menuWidth = 184;
-        const menuHeight = 100;
+        const menuHeight =
+            (onReaction ? 190 : 100) +
+            (onRetract ? 46 : 0);
         const margin = 12;
 
         setContextMenu({
@@ -527,6 +566,25 @@ export default function TalkRoom({
             showCopyNotice("コピーできませんでした");
         } finally {
             setContextMenu(null);
+        }
+    };
+
+
+    // 自分のメッセージを送信取消する
+    const handleRetract = async (messageId: string) => {
+        if (!onRetract || retractBusyId) return;
+
+        setContextMenu(null);
+        setRetractBusyId(messageId);
+
+        try {
+            await onRetract(messageId);
+            showCopyNotice("送信を取り消しました");
+        } catch (error) {
+            console.error("送信取消に失敗:", error);
+            showCopyNotice("送信を取り消せませんでした");
+        } finally {
+            setRetractBusyId(null);
         }
     };
 
@@ -645,6 +703,34 @@ export default function TalkRoom({
                                     replySender={replySender}
                                     onReplyClick={jumpToMessage}
                                     onContextMenu={openContextMenu}
+                                    proCount={
+                                        reactions.filter(
+                                            (r) =>
+                                                r.message_id === message.id &&
+                                                r.value === "pro"
+                                        ).length
+                                    }
+                                    conCount={
+                                        reactions.filter(
+                                            (r) =>
+                                                r.message_id === message.id &&
+                                                r.value === "con"
+                                        ).length
+                                    }
+                                    myReaction={
+                                        (reactions.find(
+                                            (r) =>
+                                                r.message_id === message.id &&
+                                                r.member_id === currentMemberId
+                                        )?.value as ReactionValue | undefined)
+                                        ?? null
+                                    }
+                                    reactionDisabled={
+                                        reactionBusyId !== null
+                                    }
+                                    onReaction={
+                                        onReaction ? handleReaction : undefined
+                                    }
                                 />
                             </Fragment>
                         );
@@ -779,6 +865,7 @@ export default function TalkRoom({
                         <span>返信</span>
                     </button>
 
+
                     <button
                         type="button"
                         className={styles.contextMenuItem}
@@ -789,6 +876,109 @@ export default function TalkRoom({
                         <span aria-hidden="true">▢</span>
                         <span>コピー</span>
                     </button>
+
+                    {onReaction &&
+                        !contextMenu.message.retracted_at && (
+                            <>
+                                <button
+                                    type="button"
+                                    className={styles.contextMenuItem}
+                                    disabled={reactionBusyId !== null}
+                                    aria-pressed={
+                                        reactions.some(
+                                            (r) =>
+                                                r.message_id === contextMenu.message.id &&
+                                                r.member_id === currentMemberId &&
+                                                r.value === "pro"
+                                        )
+                                    }
+                                    onClick={() => {
+                                        const id = contextMenu.message.id;
+                                        setContextMenu(null);
+                                        void handleReaction(id, "pro");
+                                    }}
+                                >
+                                    <span
+                                        aria-hidden="true"
+                                        style={{ color: "#C76D73", fontSize: 21 }}
+                                    >
+                                        ○
+                                    </span>
+                                    <span>
+                                        {reactions.some(
+                                            (r) =>
+                                                r.message_id === contextMenu.message.id &&
+                                                r.member_id === currentMemberId &&
+                                                r.value === "pro"
+                                        )
+                                            ? "賛成を取り消す"
+                                            : "賛成"}
+                                    </span>
+                                </button>
+
+                                <button
+                                    type="button"
+                                    className={styles.contextMenuItem}
+                                    disabled={reactionBusyId !== null}
+                                    aria-pressed={
+                                        reactions.some(
+                                            (r) =>
+                                                r.message_id === contextMenu.message.id &&
+                                                r.member_id === currentMemberId &&
+                                                r.value === "con"
+                                        )
+                                    }
+                                    onClick={() => {
+                                        const id = contextMenu.message.id;
+                                        setContextMenu(null);
+                                        void handleReaction(id, "con");
+                                    }}
+                                >
+                                    <span
+                                        aria-hidden="true"
+                                        style={{ color: "#648DBD", fontSize: 21 }}
+                                    >
+                                        ×
+                                    </span>
+                                    <span>
+                                        {reactions.some(
+                                            (r) =>
+                                                r.message_id === contextMenu.message.id &&
+                                                r.member_id === currentMemberId &&
+                                                r.value === "con"
+                                        )
+                                            ? "反対を取り消す"
+                                            : "反対"}
+                                    </span>
+
+                                </button>
+                            </>
+                        )}
+
+                    {/* 自分の未取消メッセージだけ送信取消を表示 */}
+                    {onRetract &&
+                        contextMenu.message.member_id === currentMemberId &&
+                        !contextMenu.message.retracted_at && (
+                            <button
+                                type="button"
+                                className={styles.contextMenuItem}
+                                disabled={retractBusyId !== null}
+                                onClick={() => {
+                                    const confirmed = window.confirm(
+                                        "このメッセージの送信を取り消しますか？"
+                                    );
+
+                                    if (confirmed) {
+                                        void handleRetract(
+                                            contextMenu.message.id
+                                        );
+                                    }
+                                }}
+                            >
+                                <span aria-hidden="true">×</span>
+                                <span>送信取消</span>
+                            </button>
+                        )}
                 </div>
             )}
         </div>

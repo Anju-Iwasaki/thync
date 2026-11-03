@@ -1,6 +1,6 @@
 
 import { Suspense } from "react";
-import RoomLivePreview from "../../../components/room/RoomLivePreview";
+import RoomView from "../../../components/room/RoomView";
 
 export default function RoomUIPreviewPage({
     params,
@@ -21,5 +21,5 @@ async function RoomById({
 }) {
     const { id } = await params;
 
-    return <RoomLivePreview roomId={id} />;
+    return <RoomView roomId={id} />;
 }

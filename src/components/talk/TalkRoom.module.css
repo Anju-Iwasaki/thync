@@ -282,7 +282,7 @@
 
 /* ダークモードのメニューは影を深く */
 
-:global(.thync-shell[data-theme="dark"]) .contextMenu {
+[data-theme="dark"] .contextMenu {
     box-shadow:
         0 10px 32px rgba(0, 0, 0, 0.42),
         0 2px 8px rgba(0, 0, 0, 0.20);
@@ -372,7 +372,7 @@
     outline-offset: 3px;
 }
 
-:global(.thync-shell[data-theme="dark"]) .jumpBottom {
+[data-theme="dark"] .jumpBottom {
     box-shadow:
         0 4px 16px rgba(0, 0, 0, 0.32);
 }
@@ -476,7 +476,7 @@
 }
 
 
-:global(.thync-shell[data-theme="dark"]) .copyNotice {
+[data-theme="dark"] .copyNotice {
     box-shadow:
         0 4px 18px rgba(0, 0, 0, 0.30);
 }
