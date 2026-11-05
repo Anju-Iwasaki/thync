@@ -1,0 +1,208 @@
+.page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    min-height: 100dvh;
+    padding: 32px 20px;
+
+    background: var(--thync-bg, #f8f9fa);
+    color: var(--thync-text, #202124);
+    font-family: inherit;
+}
+
+.container {
+    width: 100%;
+    max-width: 440px;
+}
+
+.brand {
+    margin-bottom: 36px;
+    text-align: center;
+}
+
+.logo {
+    margin: 0;
+    font-size: 38px;
+    font-weight: 800;
+    letter-spacing: -0.06em;
+    line-height: 1.2;
+}
+
+.tagline {
+    margin: 7px 0 0;
+    color: var(--thync-text-muted, #777);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.24em;
+}
+
+.card {
+    padding: 36px;
+    border: 1px solid var(--thync-border, #e1e3e5);
+    border-radius: 22px;
+    background: var(--thync-surface, #fff);
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.035),
+        0 1px 4px rgba(0, 0, 0, 0.025);
+}
+
+.cardHeader {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+}
+
+.description {
+    margin: 12px 0 0;
+    color: var(--thync-text-secondary, #666);
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+.roomInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 26px;
+    padding: 15px 17px;
+    border: 1px solid var(--thync-border, #e1e3e5);
+    border-radius: 12px;
+    background: var(--thync-surface-hover, #f6f7f8);
+}
+
+.roomLabel {
+    color: var(--thync-text-muted, #777);
+    font-size: 11px;
+}
+
+.roomTitle {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+}
+
+.label {
+    margin-bottom: 9px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.input {
+    width: 100%;
+    min-width: 0;
+    height: 48px;
+    padding: 0 15px;
+
+    border: 1px solid var(--thync-border, #d7d9dc);
+    border-radius: 12px;
+    outline: none;
+
+    background: var(--thync-bg, #fff);
+    color: var(--thync-text, #202124);
+
+    font: inherit;
+    font-size: 14px;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.input:focus {
+    border-color: var(--thync-text-secondary, #666);
+    box-shadow: 0 0 0 3px rgba(127, 127, 127, 0.1);
+}
+
+.input::placeholder {
+    color: var(--thync-text-muted, #999);
+}
+
+.hint {
+    margin: 9px 0 28px;
+    color: var(--thync-text-muted, #777);
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.submit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    min-height: 48px;
+    padding: 12px 18px;
+
+    border: none;
+    border-radius: 12px;
+
+    background: var(--thync-accent, #222);
+    color: var(--thync-accent-text, #fff);
+
+    font: inherit;
+    font-size: 14px;
+    font-weight: 700;
+
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.submit:hover:not(:disabled) {
+    opacity: 0.85;
+}
+
+.submit:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.error {
+    margin: 0 0 16px;
+    color: #c04444;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.footer {
+    margin: 25px 0 0;
+    color: var(--thync-text-muted, #999);
+    font-size: 11px;
+    line-height: 1.8;
+    text-align: center;
+}
+
+@media (max-width: 520px) {
+    .page {
+        padding: 24px 16px;
+    }
+
+    .brand {
+        margin-bottom: 28px;
+    }
+
+    .card {
+        padding: 28px 22px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .input,
+    .submit {
+        transition: none;
+    }
+}

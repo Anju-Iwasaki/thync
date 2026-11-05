@@ -1,0 +1,129 @@
+.headerContent {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    width: 100%;
+    min-width: 0;
+}
+
+.topic {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    max-width: 65%;
+    padding: 9px 16px;
+    border-radius: 999px;
+    background: var(--thync-surface-hover);
+}
+
+.topicTitle {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--thync-text);
+}
+
+.memberCount {
+    flex-shrink: 0;
+    padding-left: 12px;
+    border-left: 1px solid var(--thync-border);
+    color: var(--thync-text-secondary);
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.shareArea {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 7px;
+    min-width: 0;
+    flex: 1;
+}
+
+.urlToggle,
+.copyButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    flex-shrink: 0;
+    min-height: 34px;
+    padding: 6px 10px;
+    border: 1px solid var(--thync-border);
+    border-radius: 9px;
+    background: var(--thync-surface);
+    color: var(--thync-text-secondary);
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.urlToggle:hover,
+.copyButton:hover {
+    background: var(--thync-surface-hover);
+    color: var(--thync-text);
+}
+
+.urlToggle:focus-visible,
+.copyButton:focus-visible {
+    outline: 2px solid var(--thync-text);
+    outline-offset: 2px;
+}
+
+.urlText {
+    min-width: 0;
+    max-width: 230px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--thync-text-secondary);
+    font-size: 11px;
+}
+
+.notice {
+    flex-shrink: 0;
+    color: var(--thync-text-secondary);
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.urlUnavailable {
+    color: var(--thync-text-muted);
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+    .headerContent {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .topic {
+        max-width: 100%;
+        padding: 8px 12px;
+    }
+
+    .topicTitle {
+        font-size: 12px;
+    }
+
+    .memberCount {
+        font-size: 10px;
+    }
+
+    .shareArea {
+        flex-basis: 100%;
+        justify-content: flex-start;
+    }
+
+    .urlText {
+        max-width: 45vw;
+    }
+}

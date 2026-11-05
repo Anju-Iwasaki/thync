@@ -1,0 +1,187 @@
+.container {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.menuButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 36px;
+    height: 36px;
+
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 10px;
+
+    background: transparent;
+    color: var(--thync-text);
+    cursor: pointer;
+}
+
+.menuButton:hover {
+    background: var(--thync-surface-hover);
+}
+
+.menuButton:focus-visible,
+.themeButton:focus-visible {
+    outline: 2px solid var(--thync-text);
+    outline-offset: 2px;
+}
+
+/* 三本線アイコン */
+
+.menuIcon {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 18px;
+}
+
+.menuIcon span {
+    width: 100%;
+    height: 1.5px;
+    border-radius: 2px;
+    background: currentColor;
+}
+
+/* ポップアップ */
+
+.popup {
+    position: absolute;
+    z-index: 50;
+    top: calc(100% + 12px);
+    left: 0;
+
+    width: 220px;
+    padding: 12px;
+
+    background: var(--thync-surface);
+    color: var(--thync-text);
+    border: 1px solid var(--thync-border);
+    border-radius: 14px;
+
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.10);
+}
+
+.sectionTitle {
+    padding: 5px 6px 12px;
+
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--thync-text-secondary);
+}
+
+.themeOptions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.themeButton {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    padding: 12px 6px;
+
+    border: 1px solid var(--thync-border);
+    border-radius: 10px;
+
+    background: var(--thync-bg);
+    color: var(--thync-text-secondary);
+
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.themeButton:hover {
+    background: var(--thync-surface-hover);
+}
+
+.themeButton.selected {
+    border-color: var(--thync-text);
+    color: var(--thync-text);
+    font-weight: 600;
+}
+
+
+/* テーマ切り替え時の色変化 */
+
+.menuButton,
+.popup,
+.themeButton {
+    transition:
+        background-color var(--thync-theme-duration) ease-in-out,
+        color var(--thync-theme-duration) ease-in-out,
+        border-color var(--thync-theme-duration) ease-in-out;
+}
+
+.sectionTitle {
+    transition:
+        color var(--thync-theme-duration) ease-in-out;
+}
+
+/* アニメーションを減らす設定への対応 */
+
+
+/* デバッグ機能 */
+
+.debugSection {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--thync-border);
+}
+
+.debugActions {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.debugButton {
+    width: 100%;
+    padding: 10px 12px;
+
+    border: 1px solid var(--thync-border);
+    border-radius: 8px;
+
+    background: var(--thync-bg);
+    color: var(--thync-text);
+
+    font: inherit;
+    font-size: 11px;
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        background-color var(--thync-theme-duration) ease,
+        color var(--thync-theme-duration) ease,
+        border-color var(--thync-theme-duration) ease;
+}
+
+.debugButton:hover {
+    background: var(--thync-surface-hover);
+}
+
+.debugButton:focus-visible {
+    outline: 2px solid var(--thync-text);
+    outline-offset: 2px;
+}
+
+/* アニメーションを減らす設定 */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .menuButton,
+    .popup,
+    .themeButton,
+    .sectionTitle,
+    .debugButton {
+        transition: none;
+    }
+}
