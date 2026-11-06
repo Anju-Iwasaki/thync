@@ -10,6 +10,7 @@
     "db:types": "supabase gen types typescript --linked > src/types/database.ts"
   },
   "dependencies": {
+    "@google/genai": "^3.0.0",
     "@supabase/supabase-js": "^2.118.0",
     "next": "16.4.3",
     "react": "19.3.0",
@@ -20,11 +21,12 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.4",
     "@tailwindcss/turbopack": "^4",
-    "@types/node": "^20",
+    "@types/node": "^20.19.43",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.4.3",
+    "postcss": "^8.5.32",
     "prettier": "^3.9.10",
     "supabase": "^2.122.0",
     "tailwindcss": "^4",
