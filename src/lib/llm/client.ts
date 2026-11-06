@@ -1,4 +1,4 @@
-// Gemini呼び出し  担当：楠奥（星座日記から移植）
+// Gemini呼び出し
 // テスト（replay）からも呼ばれるので、server-only は付けない
 import { GoogleGenAI } from "@google/genai";
 

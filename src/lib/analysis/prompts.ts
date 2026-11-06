@@ -1,4 +1,4 @@
-// プロンプト  担当：楠奥（messagePrompt は岩崎と共同）
+// プロンプト（messagePrompt は共同）
 import type { AnalysisInput } from '@/types/diff';
 import type { BoardState } from '@/types/state';
 
