@@ -1,11 +1,12 @@
-// 端末からDBへの書き込み 担当：岩崎
-// 大槻はここの関数だけを呼ぶ。supabase を直接触らない
+// 端末からDBへの書き込み　担当：岩崎
+// 画面（大槻）はここの関数だけを呼ぶ。supabaseを直接触らない
 import { supabase } from '@/lib/supabase/browser';
-import type { Message } from '@/types/rows';
+import { DEFAULT_ANALYSIS_MODE } from '@/constants';
+import type { Member, Message, Room } from '@/types/rows';
 import type { ReactionValue } from '@/types/domain';
 
 // サーバーの受付を呼ぶ。分析が終わるのは待たない
-// （結果の付箋は Realtime で全員に届くので、ここで受け取る必要がない）
+// （結果の付箋はRealtimeで全員に届くので、ここで受け取る必要がない）
 function requestAnalysis(messageId: string, cause: 'send' | 'react'): void {
   fetch('/api/enqueue', {
     method: 'POST',
@@ -14,7 +15,29 @@ function requestAnalysis(messageId: string, cause: 'send' | 'react'): void {
   }).catch((e) => console.warn('enqueue に失敗', e));
 }
 
-// 返り値の行は画面の一覧に足さないこと。自分の発言も Realtime で届くので二重になる
+// 部屋を作る。方式は作成時に固定。返り値のidで/room/<id>に移る
+export async function createRoom(topic: string): Promise<Room> {
+  const { data, error } = await supabase
+    .from('rooms')
+    .insert({ topic, analysis_mode: DEFAULT_ANALYSIS_MODE })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+// 部屋に参加する。返り値のidが以後のmemberId
+export async function joinRoom(roomId: string, nickname: string): Promise<Member> {
+  const { data, error } = await supabase
+    .from('members')
+    .insert({ room_id: roomId, nickname })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+// 返り値の行は画面の一覧に足さないこと。自分の発言もRealtimeで届くので二重になる
 export async function sendMessage(
   roomId: string,
   memberId: string,
@@ -38,7 +61,7 @@ export async function react(
   memberId: string,
   value: ReactionValue
 ): Promise<void> {
-  // 押し直し（賛成→反対）は上書き。主キーが (message_id, member_id) なのでそこで衝突を判定する
+  // 押し直し（賛成→反対）は上書き。主キーが(message_id, member_id)なのでそこで衝突を判定する
   const { error } = await supabase
     .from('reactions')
     .upsert({ message_id: messageId, member_id: memberId, value }, { onConflict: 'message_id,member_id' });
@@ -49,7 +72,7 @@ export async function react(
 }
 
 export async function unreact(messageId: string, memberId: string): Promise<void> {
-  // 付箋は消さない。ジョブも積まない
+  // 付箋は消さない。
   const { error } = await supabase
     .from('reactions')
     .delete()

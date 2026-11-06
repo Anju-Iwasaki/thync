@@ -1,12 +1,12 @@
 'use client';
-// 仮のトーク（岩崎）。まおの TalkRoom ができたら RoomShell から外す
+// 仮のトーク（岩崎）。 TalkRoomができたらRoomShellから外す
 import { useState } from 'react';
 import { sendMessage, react, unreact, retractMessage } from '@/client/actions';
 import type { TalkRoomProps } from '@/components/talk/TalkRoom';
 import type { Message } from '@/types/rows';
 import type { ReactionValue } from '@/types/domain';
 
-export default function DevTalk({ memberId, members, messages, reactions, roomId }: TalkRoomProps & { roomId: string }) {
+export default function DevTalk({ memberId, members, messages, reactions, roomId }: TalkRoomProps) {
   const [body, setBody] = useState('');
   const [replyTo, setReplyTo] = useState<Message | null>(null);
   const [log, setLog] = useState('');

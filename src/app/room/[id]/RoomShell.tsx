@@ -1,8 +1,9 @@
 'use client';
-// 部屋の入れ物（岩崎）。データは useRoom で1回だけ読み、各ルームに引数で渡す
+// 部屋の入れ物（岩崎）。データはuseRoomで1回だけ読み、各ルームに引数で渡す
 // 組み込み日に、仮の部品（Dev…）を本番の部品に1行ずつ差し替える
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase/browser';
+import { joinRoom } from '@/client/actions';
+import JoinForm from '@/components/JoinForm';
 import { useRoom } from '@/client/useRoom';
 import DevTalk from '@/components/dev/DevTalk';
 import DevBoard from '@/components/dev/DevBoard';
@@ -21,8 +22,6 @@ export default function RoomShell({ roomId }: { roomId: string }) {
   const { room, members, messages, reactions, notes, error } = useRoom(roomId);
   const [memberId, setMemberId] = useState<string | null>(null);
   const [tab, setTab] = useState<Tab>('talk');
-  const [nickname, setNickname] = useState('');
-  const [joinError, setJoinError] = useState('');
 
   // 自分のメンバーIDはタブごとに覚える（通常ウィンドウとシークレットで別人になる）
   useEffect(() => {
@@ -31,28 +30,18 @@ export default function RoomShell({ roomId }: { roomId: string }) {
     } catch {}
   }, [roomId]);
 
-  // 参加（まおの JoinForm ができたら差し替える）
-  async function join() {
-    const { data, error } = await supabase.from('members').insert({ room_id: roomId, nickname }).select().single();
-    if (error) return setJoinError(JSON.stringify(error));
+  // 参加。JoinForm から呼ばれる。失敗は例外のまま JoinForm に返す
+  async function join(nickname: string) {
+    const member = await joinRoom(roomId, nickname);
     try {
-      sessionStorage.setItem(memberKey(roomId), data.id);
+      sessionStorage.setItem(memberKey(roomId), member.id);
     } catch {}
-    setMemberId(data.id);
+    setMemberId(member.id);
   }
 
   if (!room) return <main style={{ padding: 16 }}><p>部屋を読み込み中…</p><pre>{error}</pre></main>;
 
-  if (!memberId) {
-    return (
-      <main style={{ padding: 16 }}>
-        <h1>{room.topic}</h1>
-        <input value={nickname} onChange={(e) => setNickname(e.target.value)} placeholder="ニックネーム" />
-        <button onClick={join} disabled={!nickname.trim()}>参加</button>
-        <pre>{joinError}</pre>
-      </main>
-    );
-  }
+  if (!memberId) return <JoinForm topic={room.topic} onJoin={join} />;
 
   return (
     <main style={{ padding: 16 }}>

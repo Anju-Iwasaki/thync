@@ -9,6 +9,7 @@ export default function DevTalkPage() {
   return (
     <main>
       <TalkRoom
+        roomId={sample.room.id}
         memberId={sample.members[0].id}
         members={sample.members}
         messages={sample.messages}

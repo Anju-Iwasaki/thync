@@ -1,4 +1,5 @@
-// プロンプト  担当：楠奥（messagePrompt は岩崎と共同）
+// プロンプト  担当：楠奥
+// 出力の検査と再試行は analyzeが行う。ここは何を聞くかだけを書く
 import type { AnalysisInput } from '@/types/diff';
 import type { BoardState } from '@/types/state';
 

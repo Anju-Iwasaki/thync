@@ -1,5 +1,5 @@
 'use client';
-// 仮のボード（岩崎）。付箋を木の形の文字で並べるだけ。森の Board ができたら外す
+// 仮のボード（岩崎）。付箋を木の形の文字で並べるだけ。森のBoardができたら外す
 import type { BoardProps } from '@/components/board/Board';
 
 export default function DevBoard({ notes, scale }: BoardProps) {
