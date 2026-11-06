@@ -286,3 +286,18 @@
         transition: none;
     }
 }
+
+
+/* サイドバーの文字サイズ設定 */
+
+.groupTitle {
+    font-size: calc(14px * var(--thync-font-scale, 1));
+}
+
+.groupMeta {
+    font-size: calc(11px * var(--thync-font-scale, 1));
+}
+
+.addGroupButton {
+    font-size: calc(12px * var(--thync-font-scale, 1));
+}

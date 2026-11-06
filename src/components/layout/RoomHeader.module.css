@@ -127,3 +127,34 @@
         max-width: 45vw;
     }
 }
+
+
+/* ヘッダーのテーマ切り替え */
+
+.topic,
+.topicTitle,
+.memberCount,
+.urlToggle,
+.copyButton,
+.urlText,
+.notice,
+.urlUnavailable {
+    transition:
+        background-color var(--thync-theme-duration) ease-in-out,
+        color var(--thync-theme-duration) ease-in-out,
+        border-color var(--thync-theme-duration) ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .topic,
+    .topicTitle,
+    .memberCount,
+    .urlToggle,
+    .copyButton,
+    .urlText,
+    .notice,
+    .urlUnavailable {
+        transition: none;
+    }
+}
