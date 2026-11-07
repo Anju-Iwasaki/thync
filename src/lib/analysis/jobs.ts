@@ -89,6 +89,13 @@ async function loadContext(job: Job): Promise<InputContext> {
   };
 }
 
+// 送信取り消し済みか
+async function isRetracted(messageId: string): Promise<boolean> {
+  const { data, error } = await admin.from('messages').select('retracted_at').eq('id', messageId).single();
+  if (error) throw error;
+  return data.retracted_at !== null;
+}
+
 //ジョブ1件を処理
 async function processJob(job: Job): Promise<void> {
   try {
@@ -97,7 +104,8 @@ async function processJob(job: Job): Promise<void> {
     const input = buildInput(job, ctx, idMap);
     const action = await analyze(state, input);
     const draft = toNoteDraft(action, input, idMap);
-    if (draft) await persistDiff(job.room_id, draft);
+    // 分析中に送信取り消しされていたら、付箋を作らない
+    if (draft && !(await isRetracted(job.message_id))) await persistDiff(job.room_id, draft);
 
     await admin.from('analysis_jobs').update({ status: 'done' }).eq('id', job.id);
   } catch (e) {
