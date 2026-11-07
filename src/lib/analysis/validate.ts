@@ -1,4 +1,4 @@
-// 出力の検査　担当：楠奥
+// 出力の検査
 import type { AnalysisAction, AnalysisInput } from '@/types/diff';
 import type { BoardState } from '@/types/state';
 import { MAX_LABEL_LENGTH } from "@/constants";

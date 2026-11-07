@@ -1,4 +1,4 @@
-// AIの気づき　担当：楠奥。時間がなければ切ってOK
+// AIの気づき
 import type { BoardState } from '@/types/state';
 import { callGemini } from '@/lib/llm/client';
 

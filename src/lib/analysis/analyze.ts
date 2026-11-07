@@ -1,4 +1,4 @@
-// 分析本体　担当：楠奥
+// 分析本体
 // テスト（replay）からも呼ばれるので、server-only は付けない
 import { AnalysisAction as AnalysisActionSchema,} from "@/types/diff";
 import type { AnalysisAction, AnalysisInput,} from "@/types/diff";
