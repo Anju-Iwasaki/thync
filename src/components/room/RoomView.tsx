@@ -35,6 +35,7 @@ import {
 import type { ReactionValue } from "@/types/domain";
 import type { RoomData } from "@/client/useRoom";
 import { buildSummary } from "@/lib/summary/buildSummary";
+import { useInsights } from "@/client/useInsights";
 import { useJoinedRoomGroups } from "@/lib/client/useJoinedRoomGroups";
 
 type Props = {
@@ -297,6 +298,13 @@ function RoomLiveContent({
         reactions
     );
 
+    // AIの気づき（まとめタブを開いているときだけ取る）
+    const { insights } = useInsights(
+        roomId,
+        notes,
+        activeTab === "summary"
+    );
+
     return (
 
         <AppShell
@@ -389,7 +397,7 @@ function RoomLiveContent({
                 <SummaryRoom
                     rows={summaryRows}
                     members={members}
-                    insights={[]}
+                    insights={insights}
                 />
             ) : (
 
