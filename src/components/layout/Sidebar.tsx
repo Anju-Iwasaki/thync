@@ -28,8 +28,27 @@ type SidebarProps = {
     selectedGroupId: string | null;
     onSelectGroup: (id: string) => void;
     theme: "light" | "dark";
+
     onThemeChange: (theme: "light" | "dark") => void;
+
+    accentPalette?: "neutral" | "sky" | "mint" | "rose";
+    onAccentPaletteChange?: (
+        palette: "neutral" | "sky" | "mint" | "rose"
+    ) => void;
+
+    fontSizeMode?: "small" | "normal" | "large";
+    onFontSizeChange?: (
+        size: "small" | "normal" | "large"
+    ) => void;
+
     debugActions?: DebugAction[];
+
+
+    boardLineStyle?: "soft" | "rounded";
+    onBoardLineStyleChange?: (
+        style: "soft" | "rounded"
+    ) => void;
+
     onAddGroup?: (
         request: GroupAddRequest
     ) => void | Promise<void>;
@@ -41,7 +60,13 @@ export default function Sidebar({
     onSelectGroup,
     theme,
     onThemeChange,
+    accentPalette,
+    onAccentPaletteChange,
+    fontSizeMode,
+    onFontSizeChange,
     debugActions,
+    boardLineStyle,
+    onBoardLineStyleChange,
     onAddGroup,
 }: SidebarProps) {
     const [isGroupAddOpen, setIsGroupAddOpen] =
@@ -52,8 +77,16 @@ export default function Sidebar({
             <div className={styles.brand}>
                 <AppMenu
                     theme={theme}
+
                     onThemeChange={onThemeChange}
+                    accentPalette={accentPalette}
+                    onAccentPaletteChange={onAccentPaletteChange}
+                    fontSizeMode={fontSizeMode}
+                    onFontSizeChange={onFontSizeChange}
                     debugActions={debugActions}
+
+                    boardLineStyle={boardLineStyle}
+                    onBoardLineStyleChange={onBoardLineStyleChange}
                 />
 
                 <div className={styles.brandText}>

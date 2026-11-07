@@ -1,12 +1,13 @@
+
 import type { Member } from "@/types/rows";
 import type { SummaryRow } from "@/lib/summary/buildSummary";
 import CompareTable from "./CompareTable";
+import styles from "./SummaryRoom.module.css";
 
 type Insight = {
     text: string;
     ideaIds: string[];
 };
-import styles from "./SummaryRoom.module.css";
 
 type SummaryRoomProps = {
     rows: SummaryRow[];
@@ -20,10 +21,9 @@ export default function SummaryRoom({
     insights = [],
 }: SummaryRoomProps) {
     const findMemberName = (memberId: string) => {
-        return (
-            members.find((member) => member.id === memberId)
-                ?.nickname ?? "不明なユーザー"
-        );
+        return members.find(
+            member => member.id === memberId
+        )?.nickname ?? "不明なユーザー";
     };
 
     return (
@@ -49,7 +49,6 @@ export default function SummaryRoom({
                         >
                             AIの気づき
                         </h3>
-
                         <div className={styles.insightBox}>
                             {insights.map((insight, index) => (
                                 <p
@@ -81,113 +80,142 @@ export default function SummaryRoom({
                     ) : (
                         <div className={styles.ideaList}>
                             {rows.map((idea) => (
-                                <article
+                                <details
                                     className={styles.ideaCard}
                                     key={idea.ideaId}
+                                    open={undefined}
                                 >
-                                    <div className={styles.ideaHeader}>
-                                        <h4 className={styles.ideaTitle}>
-                                            {idea.label}
-                                        </h4>
+                                    <summary className={styles.ideaToggle}>
+                                        <div className={styles.ideaToggleContent}>
+                                            <h4 className={styles.ideaTitle}>
+                                                {idea.label}
+                                            </h4>
 
-                                        <span className={styles.proposer}>
+                                            <div className={styles.voteRow}>
+                                                <span className={styles.vote}>
+                                                    賛成
+                                                    <strong>{idea.pro}</strong>
+                                                </span>
+                                                <span className={styles.vote}>
+                                                    反対
+                                                    <strong>{idea.con}</strong>
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <span
+                                            className={styles.expandIcon}
+                                            aria-hidden="true"
+                                        >
+                                            <span className={styles.expandChevron}>
+                                                ⌄
+                                            </span>
+                                        </span>
+                                    </summary>
+
+                                    <div className={styles.ideaBody}>
+                                        <div className={styles.proposer}>
                                             発案：
-                                            {findMemberName(
-                                                idea.proposerId
-                                            )}
-                                        </span>
-                                    </div>
-
-                                    <div className={styles.voteRow}>
-                                        <span className={styles.vote}>
-                                            賛成
-                                            <strong>{idea.pro}</strong>
-                                        </span>
-                                        <span className={styles.vote}>
-                                            反対
-                                            <strong>{idea.con}</strong>
-                                        </span>
-                                    </div>
-
-                                    {idea.reasons.length > 0 && (
-                                        <div className={styles.detailGroup}>
-                                            <h5 className={styles.detailTitle}>
-                                                賛成理由
-                                            </h5>
-
-                                            <ul className={styles.detailList}>
-                                                {idea.reasons.map(
-                                                    (reason, index) => (
-                                                        <li key={index}>
-                                                            {reason}
-                                                        </li>
-                                                    )
-                                                )}
-                                            </ul>
+                                            {findMemberName(idea.proposerId)}
                                         </div>
-                                    )}
 
-                                    {idea.problems.length > 0 && (
-                                        <div className={styles.problemList}>
-                                            {idea.problems.map((problem) => (
-                                                <div
-                                                    className={styles.problem}
-                                                    key={problem.id}
-                                                >
-                                                    <div className={styles.problemLabel}>
-                                                        <span
-                                                            className={styles.problemMarker}
-                                                            aria-hidden="true"
-                                                        />
-                                                        <span>
-                                                            {problem.label}
-                                                        </span>
-                                                    </div>
 
-                                                    {problem.solutions.length >
-                                                        0 && (
-                                                            <div
-                                                                className={
-                                                                    styles.solutionGroup
-                                                                }
-                                                            >
-                                                                <span
-                                                                    className={
-                                                                        styles.solutionHeading
-                                                                    }
-                                                                >
-                                                                    解決策
-                                                                </span>
+                                        {idea.reasons.length > 0 && (
+                                            <div className={styles.detailGroup}>
+                                                <h5 className={styles.detailTitle}>
+                                                    賛成理由
+                                                </h5>
 
-                                                                <ul
-                                                                    className={
-                                                                        styles.solutionList
-                                                                    }
-                                                                >
-                                                                    {problem.solutions.map(
-                                                                        (
-                                                                            solution,
-                                                                            index
-                                                                        ) => (
-                                                                            <li
-                                                                                key={
-                                                                                    index
-                                                                                }
-                                                                            >
-                                                                                {
-                                                                                    solution
-                                                                                }
-                                                                            </li>
-                                                                        )
-                                                                    )}
-                                                                </ul>
-                                                            </div>
-                                                        )}
+                                                <div className={styles.reasonList}>
+                                                    {idea.reasons.map((reason, index) => (
+                                                        <div
+                                                            className={styles.reasonCard}
+                                                            key={index}
+                                                        >
+                                                            <span
+                                                                className={styles.reasonMarker}
+                                                                aria-hidden="true"
+                                                            />
+                                                            <span>{reason}</span>
+                                                        </div>
+                                                    ))}
                                                 </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </article>
+                                            </div>
+                                        )}
+
+
+
+                                        {idea.problems.length > 0 && (
+                                            <div className={styles.problemList}>
+                                                <h5 className={styles.problemTitle}>
+                                                    問題点
+                                                </h5>
+                                                {idea.problems.map(problem => (
+
+                                                    <div
+                                                        className={styles.problem}
+                                                        key={problem.id}
+                                                    >
+                                                        <div className={styles.problemLabel}>
+                                                            <span
+                                                                className={styles.problemMarker}
+                                                                aria-hidden="true"
+                                                            />
+                                                            <span>{problem.label}</span>
+                                                        </div>
+
+
+                                                        {problem.solutions.length > 0 && (
+                                                            <details className={styles.solutionAccordion}>
+                                                                <summary className={styles.solutionToggle}>
+                                                                    <span
+                                                                        className={styles.solutionMarker}
+                                                                        aria-hidden="true"
+                                                                    />
+                                                                    <span className={styles.solutionToggleLabel}>
+                                                                        解決策
+                                                                        <span className={styles.solutionCount}>
+                                                                            {problem.solutions.length}件
+                                                                        </span>
+                                                                    </span>
+                                                                    <span
+                                                                        className={styles.solutionChevron}
+                                                                        aria-hidden="true"
+                                                                    >
+                                                                        ⌄
+                                                                    </span>
+                                                                </summary>
+
+                                                                <div className={styles.solutionCards}>
+                                                                    {problem.solutions.map((solution, index) => (
+                                                                        <div
+                                                                            className={styles.solutionCard}
+                                                                            key={index}
+                                                                        >
+                                                                            <span
+                                                                                className={styles.solutionCardMarker}
+                                                                                aria-hidden="true"
+                                                                            />
+                                                                            <span>{solution}</span>
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            </details>
+                                                        )}
+
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+
+                                        {idea.reasons.length === 0 &&
+                                            idea.problems.length === 0 && (
+                                                <p className={styles.noDetails}>
+                                                    まだ理由・問題点は登録されていません。
+                                                </p>
+                                            )}
+                                    </div>
+                                </details>
                             ))}
                         </div>
                     )}

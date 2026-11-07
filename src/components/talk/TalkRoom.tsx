@@ -19,6 +19,7 @@ import styles from "./TalkRoom.module.css";
 
 type TalkRoomProps = {
     roomId: string;
+    jumpToMessageId?: string | null;
     messages: Message[];
     members: Member[];
     currentMemberId: string;
@@ -123,6 +124,7 @@ const isConsecutiveMessage = (
 
 export default function TalkRoom({
     roomId,
+    jumpToMessageId,
     messages,
     members,
     currentMemberId,
@@ -624,6 +626,22 @@ export default function TalkRoom({
             highlightTimerRef.current = null;
         }, 1800);
     };
+
+
+    // THYNC詳細パネルから指定された元発言へジャンプ
+    useEffect(() => {
+        if (!jumpToMessageId) return;
+
+        const frame = requestAnimationFrame(() => {
+            jumpToMessage(jumpToMessageId);
+        });
+
+        return () => cancelAnimationFrame(frame);
+
+        // Talkタブ表示時のジャンプ要求に対応
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [jumpToMessageId]);
+
 
     const replySender = replyTo
         ? members.find(

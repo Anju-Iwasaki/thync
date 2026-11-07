@@ -138,3 +138,81 @@
         transition: none;
     }
 }
+
+
+/* ========================================
+   Talkの配色設定
+   ======================================== */
+
+/* 標準：モノクロ */
+.thync-shell {
+    --thync-talk-other: #f0f0ee;
+    --thync-talk-mine: #d5d5d2;
+    --thync-talk-other-text: #303030;
+    --thync-talk-mine-text: #202020;
+}
+
+.thync-shell[data-theme="dark"] {
+    --thync-talk-other: #353535;
+    --thync-talk-mine: #585858;
+    --thync-talk-other-text: #f4f4f4;
+    --thync-talk-mine-text: #ffffff;
+}
+
+/* スカイ */
+.thync-shell[data-accent-palette="sky"] {
+    --thync-talk-other: #e2f1f7;
+    --thync-talk-mine: #a3dcef;
+    --thync-talk-other-text: #274c5e;
+    --thync-talk-mine-text: #17485b;
+}
+
+.thync-shell[data-theme="dark"][data-accent-palette="sky"] {
+    --thync-talk-other: #354650;
+    --thync-talk-mine: #235d75;
+    --thync-talk-other-text: #e5f5fa;
+    --thync-talk-mine-text: #e4f8ff;
+}
+
+/* ミント */
+.thync-shell[data-accent-palette="mint"] {
+    --thync-talk-other: #e5f5eb;
+    --thync-talk-mine: #9eddbb;
+    --thync-talk-other-text: #325b49;
+    --thync-talk-mine-text: #194e36;
+}
+
+.thync-shell[data-theme="dark"][data-accent-palette="mint"] {
+    --thync-talk-other: #35473d;
+    --thync-talk-mine: #27654b;
+    --thync-talk-other-text: #e8f7ed;
+    --thync-talk-mine-text: #e5fff0;
+}
+
+/* ローズ */
+.thync-shell[data-accent-palette="rose"] {
+    --thync-talk-other: #f9eaf0;
+    --thync-talk-mine: #edb1c7;
+    --thync-talk-other-text: #704656;
+    --thync-talk-mine-text: #652b44;
+}
+
+.thync-shell[data-theme="dark"][data-accent-palette="rose"] {
+    --thync-talk-other: #4b3a43;
+    --thync-talk-mine: #803f5e;
+    --thync-talk-other-text: #fbeaf1;
+    --thync-talk-mine-text: #fff0f5;
+}
+
+/* 文字サイズ設定 */
+.thync-shell {
+    --thync-font-scale: 1;
+}
+
+.thync-shell[data-font-size="small"] {
+    --thync-font-scale: 0.9;
+}
+
+.thync-shell[data-font-size="large"] {
+    --thync-font-scale: 1.2;
+}

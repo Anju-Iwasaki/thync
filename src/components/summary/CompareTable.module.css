@@ -68,3 +68,89 @@
         transition: none;
     }
 }
+
+
+/* 比較表のテーマ切り替え */
+
+.tableScroll,
+.table,
+.table th,
+.table td,
+.empty {
+    transition:
+        background-color var(--thync-theme-duration) ease-in-out,
+        color var(--thync-theme-duration) ease-in-out,
+        border-color var(--thync-theme-duration) ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .tableScroll,
+    .table,
+    .table th,
+    .table td,
+    .empty {
+        transition: none;
+    }
+}
+
+
+/* ========================================
+   比較表：並び替えと輪郭
+   ======================================== */
+
+.sortBar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.sortLabel {
+    color: var(--thync-text-secondary);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.sortSelect {
+    max-width: 100%;
+    min-height: 38px;
+    padding: 8px 32px 8px 12px;
+    border: 1px solid var(--thync-border);
+    border-radius: 9px;
+    background: var(--thync-surface);
+    color: var(--thync-text);
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    transition:
+        background-color var(--thync-theme-duration) ease,
+        color var(--thync-theme-duration) ease,
+        border-color var(--thync-theme-duration) ease;
+}
+
+.sortSelect:focus-visible {
+    outline: 2px solid var(--thync-accent);
+    outline-offset: 2px;
+}
+
+.tableScroll {
+    box-shadow:
+        0 0 0 1px color-mix(in srgb, var(--thync-text) 9%, transparent),
+        0 4px 16px rgba(0, 0, 0, 0.055);
+}
+
+
+/* 比較表の文字サイズ設定 */
+
+.table {
+    font-size: calc(13px * var(--thync-font-scale, 1));
+}
+
+.table thead th,
+.sortLabel,
+.sortSelect {
+    font-size: calc(12px * var(--thync-font-scale, 1));
+}

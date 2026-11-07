@@ -185,3 +185,271 @@
         transition: none;
     }
 }
+
+
+/* THYNC 接続線スタイル切り替え */
+
+.boardStyleSection {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--thync-border);
+}
+
+.boardStyleOptions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    padding: 4px;
+
+    border: 1px solid var(--thync-border);
+    border-radius: 11px;
+
+    background: var(--thync-bg);
+}
+
+
+.boardStyleButton {
+    min-height: 38px;
+    padding: 8px 6px;
+
+    border: 1px solid transparent;
+    border-radius: 8px;
+
+    background: transparent;
+    color: var(--thync-text-secondary);
+
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background-color var(--thync-theme-duration) ease-in-out,
+        color var(--thync-theme-duration) ease-in-out,
+        border-color var(--thync-theme-duration) ease-in-out;
+}
+
+
+.boardStyleButton:hover {
+    background: var(--thync-surface-hover);
+    color: var(--thync-text);
+}
+
+.boardStyleButton.boardStyleSelected {
+    background: var(--thync-surface);
+    border-color: var(--thync-border);
+    color: var(--thync-text);
+
+    box-shadow: 0 2px 7px rgba(0, 0, 0, 0.07);
+}
+
+.boardStyleButton:focus-visible {
+    outline: 2px solid var(--thync-text);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .boardStyleButton {
+        transition: none;
+    }
+}
+
+
+/* THYNC接続線スタイル設定：テーマ切り替え */
+
+.boardStyleSection,
+.boardStyleOptions {
+    transition:
+        background-color var(--thync-theme-duration) ease-in-out,
+        border-color var(--thync-theme-duration) ease-in-out,
+        color var(--thync-theme-duration) ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .boardStyleSection,
+    .boardStyleOptions {
+        transition: none;
+    }
+}
+
+
+/* ========================================
+   外観カスタマイズ
+   ======================================== */
+
+.popup {
+    width: 260px;
+    max-height: min(78vh, 720px);
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.preferenceSection {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--thync-border);
+}
+
+.paletteList {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.paletteOption {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--thync-border);
+    border-radius: 12px;
+    background: var(--thync-surface);
+    color: var(--thync-text);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition:
+        border-color var(--thync-theme-duration) ease,
+        background-color var(--thync-theme-duration) ease,
+        box-shadow var(--thync-theme-duration) ease;
+}
+
+.paletteOption:hover {
+    background: var(--thync-surface-hover);
+}
+
+.paletteOption.paletteSelected {
+    border-color: var(--thync-text);
+    box-shadow:
+        0 0 0 1px var(--thync-text);
+}
+
+.paletteOption:focus-visible,
+.fontButton:focus-visible {
+    outline: 2px solid var(--thync-text);
+    outline-offset: 2px;
+}
+
+.paletteName {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--thync-text);
+}
+
+.palettePreviewRow {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 6px;
+}
+
+.palettePreviewRow {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 8px;
+}
+
+.paletteSwatchLight,
+.paletteSwatchDark {
+    display: block;
+    width: 100%;
+    height: 44px;
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.paletteSwatchLight {
+    background:
+        linear-gradient(135deg,
+            var(--preview-light-other) 0 48%,
+            var(--preview-light-mine) 52% 100%);
+}
+
+.paletteSwatchDark {
+    background:
+        linear-gradient(135deg,
+            var(--preview-dark-other) 0 48%,
+            var(--preview-dark-mine) 52% 100%);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* モノクロ */
+.paletteOption[data-palette="neutral"] {
+    --preview-light-other: #f0f0ee;
+    --preview-light-mine: #d5d5d2;
+    --preview-light-other-text: #303030;
+    --preview-light-mine-text: #202020;
+    --preview-dark-other: #353535;
+    --preview-dark-mine: #585858;
+    --preview-dark-other-text: #f4f4f4;
+    --preview-dark-mine-text: #ffffff;
+}
+
+/* スカイ */
+.paletteOption[data-palette="sky"] {
+    --preview-light-other: #e2f1f7;
+    --preview-light-mine: #a3dcef;
+    --preview-light-other-text: #274c5e;
+    --preview-light-mine-text: #17485b;
+    --preview-dark-other: #354650;
+    --preview-dark-mine: #235d75;
+    --preview-dark-other-text: #e5f5fa;
+    --preview-dark-mine-text: #e4f8ff;
+}
+
+/* ミント */
+.paletteOption[data-palette="mint"] {
+    --preview-light-other: #e5f5eb;
+    --preview-light-mine: #9eddbb;
+    --preview-light-other-text: #325b49;
+    --preview-light-mine-text: #194e36;
+    --preview-dark-other: #35473d;
+    --preview-dark-mine: #27654b;
+    --preview-dark-other-text: #e8f7ed;
+    --preview-dark-mine-text: #e5fff0;
+}
+
+/* ローズ */
+.paletteOption[data-palette="rose"] {
+    --preview-light-other: #f9eaf0;
+    --preview-light-mine: #edb1c7;
+    --preview-light-other-text: #704656;
+    --preview-light-mine-text: #652b44;
+    --preview-dark-other: #4b3a43;
+    --preview-dark-mine: #803f5e;
+    --preview-dark-other-text: #fbeaf1;
+    --preview-dark-mine-text: #fff0f5;
+}
+
+/* 文字サイズの選択ボタン */
+.fontOptions {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 7px;
+}
+
+.fontButton {
+    min-height: 38px;
+    padding: 8px 4px;
+    border: 1px solid var(--thync-border);
+    border-radius: 9px;
+    background: var(--thync-surface);
+    color: var(--thync-text-secondary);
+    font: inherit;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.fontButton.fontSelected {
+    background: var(--thync-surface-hover);
+    color: var(--thync-text);
+    border-color: var(--thync-text);
+    font-weight: 700;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .paletteOption {
+        transition: none;
+    }
+}

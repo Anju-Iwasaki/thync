@@ -69,10 +69,12 @@
     padding: 11px 15px;
     border-radius: 17px;
 
-    background: var(--thync-surface-hover);
-    color: var(--thync-text);
 
-    font-size: 14px;
+    background: var(--thync-talk-other);
+    color: var(--thync-talk-other-text);
+
+    font-size: calc(14px * var(--thync-font-scale, 1));
+
     line-height: 1.65;
 
     overflow-wrap: anywhere;
@@ -85,10 +87,13 @@
     border-bottom-left-radius: 5px;
 }
 
+
 .mine .bubble {
-    background: var(--thync-surface-active);
+    background: var(--thync-talk-mine);
+    color: var(--thync-talk-mine-text);
     border-bottom-right-radius: 5px;
 }
+
 
 .body {
     margin: 0;

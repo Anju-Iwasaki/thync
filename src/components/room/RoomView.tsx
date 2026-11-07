@@ -20,6 +20,10 @@ import RoomTabs, {
 } from "../layout/RoomTabs";
 
 import TalkRoom from "../talk/TalkRoom";
+import ThyncBoard, {
+    type BoardMode,
+    type BoardLineStyle,
+} from "../thync/ThyncBoard";
 import SummaryRoom from "../summary/SummaryRoom";
 
 import {
@@ -108,8 +112,98 @@ function RoomLiveContent({
         }
     };
 
+
+    // ========================================
+    // ユーザーごとの外観設定
+    // ========================================
+
+    type AccentPalette =
+        "neutral" | "sky" | "mint" | "rose";
+
+    type FontSizeMode =
+        "small" | "normal" | "large";
+
+    const [accentPalette, setAccentPalette] =
+        useState<AccentPalette>("neutral");
+
+    const [fontSizeMode, setFontSizeMode] =
+        useState<FontSizeMode>("normal");
+
+    useEffect(() => {
+        const timer = window.setTimeout(() => {
+            try {
+                const savedPalette =
+                    localStorage.getItem("thync:accent-palette");
+                const savedSize =
+                    localStorage.getItem("thync:font-size");
+
+                if (
+                    savedPalette === "neutral" ||
+                    savedPalette === "sky" ||
+                    savedPalette === "mint" ||
+                    savedPalette === "rose"
+                ) {
+                    setAccentPalette(savedPalette);
+                }
+
+                if (
+                    savedSize === "small" ||
+                    savedSize === "normal" ||
+                    savedSize === "large"
+                ) {
+                    setFontSizeMode(savedSize);
+                }
+            } catch {
+                // 保存値を読めない場合は初期設定を使用
+            }
+        }, 0);
+
+        return () => window.clearTimeout(timer);
+    }, []);
+
+    const handleAccentPaletteChange = (
+        palette: AccentPalette
+    ) => {
+        setAccentPalette(palette);
+        try {
+            localStorage.setItem(
+                "thync:accent-palette",
+                palette
+            );
+        } catch { }
+    };
+
+    const handleFontSizeChange = (
+        size: FontSizeMode
+    ) => {
+        setFontSizeMode(size);
+        try {
+            localStorage.setItem(
+                "thync:font-size",
+                size
+            );
+        } catch { }
+    };
+
+
     const [activeTab, setActiveTab] =
         useState<RoomTab>("talk");
+
+    const [jumpTargetMessageId, setJumpTargetMessageId] =
+        useState<string | null>(null);
+
+    const handleJumpToMessage = (messageId: string) => {
+        setJumpTargetMessageId(messageId);
+        setActiveTab("talk");
+    };
+
+    // THYNCボードのデータ切り替え（UI検証用）
+    const [boardMode, setBoardMode] =
+        useState<BoardMode>("auto");
+
+    // 接続線の描画スタイル
+    const [boardLineStyle, setBoardLineStyle] =
+        useState<BoardLineStyle>("rounded");
 
     const [shareUrl, setShareUrl] = useState<string | null>(null);
 
@@ -204,9 +298,13 @@ function RoomLiveContent({
     );
 
     return (
+
         <AppShell
             theme={theme}
+            accentPalette={accentPalette}
+            fontSizeMode={fontSizeMode}
             sidebar={
+
                 <Sidebar
                     groups={groups}
                     selectedGroupId={roomId}
@@ -216,7 +314,35 @@ function RoomLiveContent({
                         }
                     }}
                     theme={theme}
+
                     onThemeChange={handleThemeChange}
+                    accentPalette={accentPalette}
+                    onAccentPaletteChange={handleAccentPaletteChange}
+                    fontSizeMode={fontSizeMode}
+                    onFontSizeChange={handleFontSizeChange}
+                    boardLineStyle={boardLineStyle}
+
+                    onBoardLineStyleChange={setBoardLineStyle}
+                    debugActions={[
+                        {
+                            label: `THYNCデータ表示: ${boardMode === "auto"
+                                ? "自動"
+                                : boardMode === "mock"
+                                    ? "モック"
+                                    : "実データ"
+                                }（切替）`,
+                            onClick: () => {
+                                setBoardMode((current) =>
+                                    current === "auto"
+                                        ? "mock"
+                                        : current === "mock"
+                                            ? "live"
+                                            : "auto"
+                                );
+                            },
+                        },
+                    ]}
+
                     onAddGroup={handleAddGroup}
                 />
             }
@@ -250,6 +376,7 @@ function RoomLiveContent({
                 <TalkRoom
                     key={`${roomId}:${memberId}`}
                     roomId={roomId}
+                    jumpToMessageId={jumpTargetMessageId}
                     messages={messages}
                     members={members}
                     currentMemberId={memberId}
@@ -265,31 +392,17 @@ function RoomLiveContent({
                     insights={[]}
                 />
             ) : (
-                <div
-                    style={{
-                        minHeight: "100%",
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        padding: 32,
-                        gap: 12,
-                        textAlign: "center",
-                    }}
-                >
-                    <h2 style={{ margin: 0 }}>
-                        THYNC
-                    </h2>
 
-                    <p
-                        style={{
-                            color: "var(--thync-text-muted)",
-                            fontSize: 13,
-                        }}
-                    >
-                        ボード画面は今後接続します。
-                    </p>
-                </div>
+                <ThyncBoard
+                    notes={notes}
+                    members={members}
+                    messages={messages}
+                    reactions={reactions}
+                    onJumpToMessage={handleJumpToMessage}
+                    mode={boardMode}
+                    lineStyle={boardLineStyle}
+                />
+
             )}
         </AppShell>
     );
