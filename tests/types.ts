@@ -24,3 +24,17 @@ export const ConversationLog = z.object({
   ),
 });
 export type ConversationLog = z.infer<typeof ConversationLog>;
+
+// 分類テストの例文の形式  大谷・森はこの形で tests/fixtures/classify.json を書く
+const ClassLabel = z.enum(['idea', 'problem', 'other']);
+const MaybeLabel = z.union([ClassLabel, z.literal('')]);   // まだ付けていなければ ""
+
+export const ClassifyItem = z.object({
+  id: z.string(),            // 'c01', 'c02' …
+  body: z.string().min(1),
+  otani: MaybeLabel,
+  mori: MaybeLabel,
+  answer: MaybeLabel,        // 2人で決めた正解。正解率はこれで測る
+});
+export const ClassifyFile = z.array(ClassifyItem);
+export type ClassifyItem = z.infer<typeof ClassifyItem>;

@@ -1,8 +1,9 @@
 'use client';
-// 骨組み確認用の部屋作成
+// 骨組み確認用の部屋作成。src/app/page.tsxができたら消す
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase/browser';
+import Link from 'next/link';
+import { createRoom } from '@/client/actions';
 import { DEFAULT_ANALYSIS_MODE } from '@/constants';
 
 export default function DevPage() {
@@ -11,13 +12,12 @@ export default function DevPage() {
   const [error, setError] = useState('');
 
   async function create() {
-    const { data, error } = await supabase
-      .from('rooms')
-      .insert({ topic, analysis_mode: DEFAULT_ANALYSIS_MODE })
-      .select()
-      .single();
-    if (error) return setError(JSON.stringify(error));
-    router.push(`/room/${data.id}`);
+    try {
+      const room = await createRoom(topic);
+      router.push(`/room/${room.id}`);
+    } catch (e) {
+      setError(JSON.stringify(e));
+    }
   }
 
   return (
@@ -27,6 +27,12 @@ export default function DevPage() {
       <button onClick={create} disabled={!topic.trim()}>作成</button>
       <p>方式：{DEFAULT_ANALYSIS_MODE}</p>
       <pre>{error}</pre>
+      <h2>部品の試しページ（見本データ）</h2>
+      <ul>
+        <li><Link href="/dev/board">ボード（森）</Link></li>
+        <li><Link href="/dev/talk">トーク（大槻）</Link></li>
+        <li><Link href="/dev/summary">まとめ（大槻）</Link></li>
+      </ul>
     </main>
   );
 }
