@@ -1,0 +1,725 @@
+/* THYNC Board - UI only */
+
+.board {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    min-height: 420px;
+    overflow: hidden;
+    background: var(--thync-bg);
+    color: var(--thync-text);
+}
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-shrink: 0;
+    min-height: 96px;
+    padding: 18px 32px;
+    border-bottom: 1px solid var(--thync-border);
+    background: var(--thync-surface);
+}
+
+.heading h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 750;
+    letter-spacing: -0.04em;
+}
+
+.heading p {
+    margin: 7px 0 0;
+    font-size: 12px;
+    color: var(--thync-text-muted);
+}
+
+.toolbarRight {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+}
+
+.dataStatus {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11px;
+    color: var(--thync-text-secondary);
+}
+
+.statusDot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #65b9b8;
+}
+
+.counter {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--thync-text-secondary);
+}
+
+/* ボード領域 */
+.viewport {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    background-color: var(--thync-bg);
+    background-image:
+        radial-gradient(circle,
+            var(--thync-border) 1px,
+            transparent 1px);
+    background-size: 24px 24px;
+}
+
+.viewport:active {
+    cursor: grabbing;
+}
+
+.world {
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform-origin: 0 0;
+    will-change: transform;
+}
+
+/* 関係線 */
+.links {
+    position: absolute;
+    inset: 0;
+    overflow: visible;
+    pointer-events: none;
+}
+
+.link {
+    fill: none;
+    stroke: #9bbabc;
+    stroke-width: 2.3;
+    stroke-linecap: round;
+    opacity: 0.55;
+    transition:
+        stroke 0.25s ease,
+        opacity 0.25s ease;
+}
+
+.linkActive {
+    stroke: #57bac4;
+    stroke-width: 3.5;
+    opacity: 1;
+}
+
+/* 付箋 */
+.note {
+    --kind-color: #65b9c3;
+
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 7px;
+
+    padding: 14px 20px 14px 24px;
+    overflow: hidden;
+
+    border: 1px solid var(--thync-border);
+    border-radius: 15px;
+
+    background: var(--thync-surface);
+    color: var(--thync-text);
+
+    box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.06),
+        0 2px 5px rgba(0, 0, 0, 0.025);
+
+    text-align: left;
+    font: inherit;
+    cursor: pointer;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color var(--thync-theme-duration) ease,
+        color var(--thync-theme-duration) ease;
+}
+
+.note::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 5px;
+    background: var(--kind-color);
+}
+
+.note:hover {
+    border-color: var(--kind-color);
+    box-shadow:
+        0 11px 29px rgba(0, 0, 0, 0.10),
+        0 3px 7px rgba(0, 0, 0, 0.035);
+}
+
+.note:focus-visible {
+    outline: 3px solid var(--kind-color);
+    outline-offset: 4px;
+}
+
+.selected {
+    border-color: var(--kind-color);
+    box-shadow:
+        0 0 0 3px rgba(171, 238, 242, 0.28),
+        0 10px 28px rgba(0, 0, 0, 0.09);
+}
+
+/* アイデア */
+.idea {
+    --kind-color: #65bdc6;
+    border-radius: 18px;
+}
+
+/* 賛成理由 */
+.reason {
+    --kind-color: #83c8ab;
+}
+
+/* 問題点 */
+.problem {
+    --kind-color: #d9a184;
+}
+
+/* 解決策 */
+.solution {
+    --kind-color: #a6a0d8;
+}
+
+
+.noteType {
+    display: block;
+    color: var(--kind-color);
+    font-size: calc(11px * var(--thync-font-scale, 1));
+    font-weight: 750;
+    letter-spacing: 0.02em;
+}
+
+
+.noteText {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+
+    font-size: calc(14px * var(--thync-font-scale, 1));
+    font-weight: 650;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.idea .noteText {
+    font-size: calc(16px * var(--thync-font-scale, 1));
+    font-weight: 750;
+    -webkit-line-clamp: 2;
+}
+
+
+/* 拡大縮小 */
+.controls {
+    position: absolute;
+    z-index: 5;
+    top: 20px;
+    right: 24px;
+
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    padding: 5px;
+    border: 1px solid var(--thync-border);
+    border-radius: 12px;
+
+    background: var(--thync-surface);
+    color: var(--thync-text);
+
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
+}
+
+.controls button {
+    min-width: 34px;
+    height: 34px;
+    padding: 0 8px;
+
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--thync-text);
+
+    font: inherit;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.controls button:hover {
+    background: var(--thync-surface-hover);
+}
+
+.controls span {
+    min-width: 46px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.controls .resetButton {
+    min-width: 66px;
+    margin-left: 3px;
+    padding: 0 9px;
+    border-left: 1px solid var(--thync-border);
+    border-radius: 0 7px 7px 0;
+    font-size: 11px;
+}
+
+/* 付箋詳細 */
+.detail {
+    position: absolute;
+    z-index: 6;
+    top: 76px;
+    right: 24px;
+
+    width: min(320px, calc(100% - 48px));
+    padding: 20px;
+
+    border: 1px solid var(--thync-border);
+    border-radius: 16px;
+
+    background: var(--thync-surface);
+    color: var(--thync-text);
+
+    box-shadow: 0 14px 42px rgba(0, 0, 0, 0.12);
+}
+
+.detailHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--thync-text-secondary);
+}
+
+.detailHeader button {
+    width: 28px;
+    height: 28px;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--thync-text-secondary);
+    font-size: 21px;
+    cursor: pointer;
+}
+
+.detailHeader button:hover {
+    background: var(--thync-surface-hover);
+}
+
+.detailTitle {
+    margin: 16px 0;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+
+.detailMeta {
+    padding-top: 13px;
+    border-top: 1px solid var(--thync-border);
+    color: var(--thync-text-muted);
+    font-size: 11px;
+}
+
+/* 空状態 */
+.emptyState {
+    position: absolute;
+    inset: 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    padding: 32px;
+    text-align: center;
+    pointer-events: none;
+}
+
+.emptyIcon {
+    color: #86cbd0;
+    font-size: 50px;
+    line-height: 1;
+}
+
+.emptyState h3 {
+    margin: 20px 0 8px;
+    font-size: 17px;
+}
+
+.emptyState p {
+    max-width: 340px;
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.9;
+    color: var(--thync-text-muted);
+}
+
+/* 操作ガイド */
+.hint {
+    position: absolute;
+    left: 24px;
+    bottom: 18px;
+
+    max-width: calc(100% - 48px);
+    padding: 9px 13px;
+
+    border: 1px solid var(--thync-border);
+    border-radius: 999px;
+
+    background: var(--thync-surface);
+    color: var(--thync-text-muted);
+
+    font-size: 10px;
+    pointer-events: none;
+}
+
+/* モバイル */
+@media (max-width: 720px) {
+    .toolbar {
+        min-height: 86px;
+        padding: 16px 20px;
+    }
+
+    .heading h2 {
+        font-size: 21px;
+    }
+
+    .heading p {
+        font-size: 10px;
+    }
+
+    .toolbarRight {
+        gap: 8px;
+    }
+
+    .counter {
+        display: none;
+    }
+
+    .controls {
+        right: 12px;
+        top: 12px;
+    }
+
+    .detail {
+        right: 12px;
+        top: 66px;
+    }
+
+    .hint {
+        left: 12px;
+        bottom: 12px;
+        font-size: 9px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .note,
+    .link {
+        transition: none;
+    }
+}
+
+/* セマンティックズーム：文字だけをなめらかに表示 */
+.noteType,
+.noteText {
+    transition: opacity 120ms linear;
+}
+
+
+/* 縮小時の付箋全文ポップアップ */
+.noteTooltip {
+    position: absolute;
+    z-index: 8;
+
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+
+    width: 250px;
+    max-width: calc(100% - 24px);
+    padding: 14px 16px;
+
+    border: 1px solid var(--thync-border);
+    border-radius: 12px;
+
+    background: var(--thync-surface);
+    color: var(--thync-text);
+
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+
+    pointer-events: none;
+}
+
+
+.tooltipKind {
+    font-size: calc(11px * var(--thync-font-scale, 1));
+    font-weight: 700;
+    color: var(--thync-text-secondary);
+}
+
+.tooltipText {
+    font-size: calc(14px * var(--thync-font-scale, 1));
+    font-weight: 650;
+    line-height: 1.65;
+    overflow-wrap: anywhere;
+}
+
+
+
+/* 問題点：件数バッジと同系統の淡いピンクに統一 */
+.note.problem {
+    border-left-color: #E9A5B8 !important;
+}
+
+.problem .noteType {
+    color: #C7758D;
+}
+
+/* 問題点の左端アクセントが疑似要素で作られている場合 */
+.problem::before {
+    background-color: #E9A5B8;
+}
+
+
+/* ========================================
+   テーマ切り替えアニメーション
+   ======================================== */
+
+.board,
+.toolbar,
+.viewport,
+.controls,
+.controls button,
+.detail,
+.detailHeader button,
+.hint,
+.noteTooltip {
+    transition:
+        background-color var(--thync-theme-duration) ease-in-out,
+        color var(--thync-theme-duration) ease-in-out,
+        border-color var(--thync-theme-duration) ease-in-out;
+}
+
+/* 付箋は既存のホバー効果と選択効果を維持 */
+.note {
+    transition:
+        background-color var(--thync-theme-duration) ease-in-out,
+        color var(--thync-theme-duration) ease-in-out,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+/* 文字もテーマに合わせて滑らかに切り替える */
+.heading p,
+.dataStatus,
+.counter,
+.noteType,
+.noteText,
+.detailHeader,
+.detailMeta,
+.emptyState p,
+.tooltipKind,
+.tooltipText {
+    transition:
+        color var(--thync-theme-duration) ease-in-out,
+        opacity 120ms linear;
+}
+
+/* 動きを減らすOS設定への対応 */
+@media (prefers-reduced-motion: reduce) {
+
+    .board,
+    .toolbar,
+    .viewport,
+    .controls,
+    .controls button,
+    .detail,
+    .detailHeader button,
+    .hint,
+    .noteTooltip,
+    .note,
+    .heading p,
+    .dataStatus,
+    .counter,
+    .noteType,
+    .noteText,
+    .detailHeader,
+    .detailMeta,
+    .emptyState p,
+    .tooltipKind,
+    .tooltipText {
+        transition: none;
+    }
+}
+
+
+/* 詳細パネル：追加情報 */
+
+.detail {
+    max-height: min(75vh, 690px);
+    overflow-y: auto;
+}
+
+.detailSmallMeta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px 12px;
+    padding-bottom: 14px;
+    color: var(--thync-text-muted);
+    font-size: 10px;
+    line-height: 1.7;
+}
+
+.detailVotes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 8px 0 20px;
+}
+
+.detailVote {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    padding: 12px;
+    border: 1px solid var(--thync-border);
+    border-radius: 12px;
+    background: var(--thync-surface-hover);
+    color: var(--thync-text-secondary);
+    font-size: 12px;
+    transition:
+        background-color var(--thync-theme-duration) ease,
+        border-color var(--thync-theme-duration) ease,
+        color var(--thync-theme-duration) ease;
+}
+
+.detailVote strong {
+    color: var(--thync-text);
+    font-size: 25px;
+    font-weight: 750;
+}
+
+.detailSection {
+    padding-top: 15px;
+    margin-top: 15px;
+    border-top: 1px solid var(--thync-border);
+}
+
+.detailSectionTitle {
+    margin-bottom: 11px;
+    color: var(--thync-text-secondary);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.detailQuote {
+    margin: 0 0 12px;
+    color: var(--thync-text);
+    font-size: 12px;
+    line-height: 1.75;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+}
+
+.detailJumpButton {
+    width: 100%;
+    min-height: 40px;
+    padding: 10px 12px;
+    border: 1px solid var(--thync-border);
+    border-radius: 9px;
+    background: var(--thync-text);
+    color: var(--thync-bg);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        background-color var(--thync-theme-duration) ease,
+        color var(--thync-theme-duration) ease;
+}
+
+.detailJumpButton:disabled {
+    cursor: default;
+    opacity: 0.4;
+}
+
+.detailRelatedList {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.detailRelatedButton {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--thync-border);
+    border-radius: 9px;
+    background: var(--thync-surface);
+    color: var(--thync-text);
+    font: inherit;
+    font-size: 11px;
+    text-align: left;
+    cursor: pointer;
+    transition:
+        background-color var(--thync-theme-duration) ease,
+        border-color var(--thync-theme-duration) ease;
+}
+
+.detailRelatedButton:hover {
+    background: var(--thync-surface-hover);
+}
+
+.detailRelatedScore {
+    flex-shrink: 0;
+    color: var(--thync-text-secondary);
+    font-size: 10px;
+    font-variant-numeric: tabular-nums;
+}
+
+.detailFootnote {
+    margin: 9px 0 0;
+    color: var(--thync-text-muted);
+    font-size: 10px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .detailVote,
+    .detailJumpButton,
+    .detailRelatedButton {
+        transition: none;
+    }
+}

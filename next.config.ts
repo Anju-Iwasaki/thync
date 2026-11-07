@@ -1,20 +1,17 @@
+
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
+
+  // 開発中のNext.jsロゴを非表示にする
+  devIndicators: false,
+
   experimental: {
     agentFeedback: true,
   },
   cacheComponents: true,
   partialPrefetching: true,
-  turbopack: {
-    rules: {
-      "*.css": {
-        loaders: ["@tailwindcss/turbopack"],
-        as: "*.css",
-      },
-    },
-  },
 };
 
 export default nextConfig;

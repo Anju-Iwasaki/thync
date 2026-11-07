@@ -1,0 +1,218 @@
+/* THYNC Theme Color Properties */
+/* 色の変化をアニメーション可能にする */
+
+@property --thync-bg {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #ffffff;
+}
+
+@property --thync-sidebar {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #f5f5f3;
+}
+
+@property --thync-surface {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #ffffff;
+}
+
+@property --thync-surface-hover {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #f0f0ee;
+}
+
+@property --thync-surface-active {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #ebebe9;
+}
+
+@property --thync-text {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #202020;
+}
+
+@property --thync-text-secondary {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #777777;
+}
+
+@property --thync-text-muted {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #999999;
+}
+
+@property --thync-border {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #e2e2df;
+}
+
+@property --thync-accent {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #202020;
+}
+
+@property --thync-accent-text {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #ffffff;
+}
+
+
+/*
+ * THYNC Design System
+ * 共通UI用テーマ
+ *
+ * .thync-shell 以下にのみ適用する。
+ * 既存の開発画面には影響させない。
+ */
+
+/* Light theme */
+.thync-shell {
+    color-scheme: light;
+
+
+    /* テーマ切り替え時間 */
+    --thync-theme-duration: 0.8s;
+
+    --thync-bg: #ffffff;
+    --thync-sidebar: #f5f5f3;
+    --thync-surface: #ffffff;
+    --thync-surface-hover: #f0f0ee;
+    --thync-surface-active: #ebebe9;
+
+    --thync-text: #202020;
+    --thync-text-secondary: #777777;
+    --thync-text-muted: #999999;
+
+    --thync-border: #e2e2df;
+    --thync-accent: #202020;
+    --thync-accent-text: #ffffff;
+
+    --thync-radius-sm: 8px;
+    --thync-radius-md: 14px;
+    --thync-radius-lg: 20px;
+    --thync-radius-xl: 24px;
+
+    --thync-sidebar-width: 280px;
+    --thync-header-height: 72px;
+    --thync-tabs-height: 68px;
+
+    background: var(--thync-bg);
+    color: var(--thync-text);
+    font-family:
+        Arial, "Hiragino Kaku Gothic ProN",
+        "Yu Gothic", sans-serif;
+}
+
+/* Dark theme */
+.thync-shell[data-theme="dark"] {
+    color-scheme: dark;
+
+    --thync-bg: #181818;
+    --thync-sidebar: #202020;
+    --thync-surface: #262626;
+    --thync-surface-hover: #303030;
+    --thync-surface-active: #383838;
+
+    --thync-text: #f4f4f4;
+    --thync-text-secondary: #b0b0b0;
+    --thync-text-muted: #888888;
+
+    --thync-border: #383838;
+    --thync-accent: #f4f4f4;
+    --thync-accent-text: #181818;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .thync-shell {
+        transition: none;
+    }
+}
+
+
+/* ========================================
+   Talkの配色設定
+   ======================================== */
+
+/* 標準：モノクロ */
+.thync-shell {
+    --thync-talk-other: #f0f0ee;
+    --thync-talk-mine: #d5d5d2;
+    --thync-talk-other-text: #303030;
+    --thync-talk-mine-text: #202020;
+}
+
+.thync-shell[data-theme="dark"] {
+    --thync-talk-other: #353535;
+    --thync-talk-mine: #585858;
+    --thync-talk-other-text: #f4f4f4;
+    --thync-talk-mine-text: #ffffff;
+}
+
+/* スカイ */
+.thync-shell[data-accent-palette="sky"] {
+    --thync-talk-other: #e2f1f7;
+    --thync-talk-mine: #a3dcef;
+    --thync-talk-other-text: #274c5e;
+    --thync-talk-mine-text: #17485b;
+}
+
+.thync-shell[data-theme="dark"][data-accent-palette="sky"] {
+    --thync-talk-other: #354650;
+    --thync-talk-mine: #235d75;
+    --thync-talk-other-text: #e5f5fa;
+    --thync-talk-mine-text: #e4f8ff;
+}
+
+/* ミント */
+.thync-shell[data-accent-palette="mint"] {
+    --thync-talk-other: #e5f5eb;
+    --thync-talk-mine: #9eddbb;
+    --thync-talk-other-text: #325b49;
+    --thync-talk-mine-text: #194e36;
+}
+
+.thync-shell[data-theme="dark"][data-accent-palette="mint"] {
+    --thync-talk-other: #35473d;
+    --thync-talk-mine: #27654b;
+    --thync-talk-other-text: #e8f7ed;
+    --thync-talk-mine-text: #e5fff0;
+}
+
+/* ローズ */
+.thync-shell[data-accent-palette="rose"] {
+    --thync-talk-other: #f9eaf0;
+    --thync-talk-mine: #edb1c7;
+    --thync-talk-other-text: #704656;
+    --thync-talk-mine-text: #652b44;
+}
+
+.thync-shell[data-theme="dark"][data-accent-palette="rose"] {
+    --thync-talk-other: #4b3a43;
+    --thync-talk-mine: #803f5e;
+    --thync-talk-other-text: #fbeaf1;
+    --thync-talk-mine-text: #fff0f5;
+}
+
+/* 文字サイズ設定 */
+.thync-shell {
+    --thync-font-scale: 1;
+}
+
+.thync-shell[data-font-size="small"] {
+    --thync-font-scale: 0.9;
+}
+
+.thync-shell[data-font-size="large"] {
+    --thync-font-scale: 1.2;
+}

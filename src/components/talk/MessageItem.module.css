@@ -1,0 +1,429 @@
+/* THYNC Talk - Message Item */
+
+.message {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    width: 100%;
+    margin-bottom: 18px;
+}
+
+.other {
+    justify-content: flex-start;
+}
+
+.mine {
+    justify-content: flex-end;
+}
+
+/* アイコン */
+
+.avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 34px;
+
+    width: 34px;
+    height: 34px;
+
+    border-radius: 50%;
+    background: var(--thync-surface-active);
+    color: var(--thync-text-secondary);
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* メッセージ全体 */
+
+.messageContent {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    max-width: min(75%, 600px);
+    min-width: 0;
+}
+
+.senderName {
+    padding-left: 2px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--thync-text-secondary);
+}
+
+.messageRow {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.mine .messageRow {
+    flex-direction: row-reverse;
+}
+
+/* 吹き出し */
+
+.bubble {
+    min-width: 0;
+    padding: 11px 15px;
+    border-radius: 17px;
+
+
+    background: var(--thync-talk-other);
+    color: var(--thync-talk-other-text);
+
+    font-size: calc(14px * var(--thync-font-scale, 1));
+
+    line-height: 1.65;
+
+    overflow-wrap: anywhere;
+    transition:
+        background-color var(--thync-theme-duration) ease,
+        color var(--thync-theme-duration) ease;
+}
+
+.other .bubble {
+    border-bottom-left-radius: 5px;
+}
+
+
+.mine .bubble {
+    background: var(--thync-talk-mine);
+    color: var(--thync-talk-mine-text);
+    border-bottom-right-radius: 5px;
+}
+
+
+.body {
+    margin: 0;
+    white-space: pre-wrap;
+}
+
+/* =====================================
+   Talk - 賛成・反対リアクション
+   ===================================== */
+
+.bubbleStack {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 0;
+}
+
+.hasReactions {
+    padding-bottom: 0;
+}
+
+.mine .bubbleStack {
+    align-items: flex-end;
+}
+
+/* 吹き出しに3px程度だけ重ねる */
+.reactionBar {
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    margin-top: -3px;
+    margin-left: 12px;
+}
+
+.mine .reactionBar {
+    margin-left: 0;
+    margin-right: 12px;
+}
+
+
+.reactionButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    min-width: 60px;
+    height: 28px;
+    padding: 0 10px;
+
+    border: 1px solid var(--thync-border);
+    border-radius: 999px;
+
+    background: var(--thync-surface);
+    color: var(--thync-text-secondary);
+
+    font: inherit;
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1;
+
+    white-space: nowrap;
+    cursor: pointer;
+
+    transition:
+        background-color 0.18s ease,
+        border-color 0.18s ease,
+        transform 0.18s ease,
+        opacity 0.18s ease;
+}
+
+.reactionButton:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.reactionButton:active:not(:disabled) {
+    transform: scale(0.96);
+}
+
+.reactionButton:disabled {
+    cursor: default;
+    opacity: 0.6;
+}
+
+.reactionButton:focus-visible {
+    outline: 2px solid var(--thync-text-secondary);
+    outline-offset: 2px;
+}
+
+
+.reactionSymbol {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 20px;
+    height: 24px;
+
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 1;
+    overflow: visible;
+    -webkit-text-stroke: 0.5px currentColor;
+}
+
+.reactionDivider {
+    width: 1px;
+    height: 12px;
+    background: currentColor;
+    opacity: 0.3;
+}
+
+.reactionPro .reactionSymbol {
+    color: #C76D73;
+    -webkit-text-stroke: 0.8px currentColor;
+}
+
+.reactionCon .reactionSymbol {
+    color: #648DBD;
+}
+
+.reactionPro.reactionSelected {
+    background: rgba(199, 109, 115, 0.12);
+    border-color: rgba(199, 109, 115, 0.38);
+}
+
+.reactionCon.reactionSelected {
+    background: rgba(100, 141, 189, 0.12);
+    border-color: rgba(100, 141, 189, 0.38);
+}
+
+.reactionSelected {
+    font-weight: 700;
+}
+
+
+/* 時刻 */
+
+.time {
+    flex-shrink: 0;
+    padding-bottom: 3px;
+
+    color: var(--thync-text-muted);
+    font-size: 10px;
+    white-space: nowrap;
+}
+
+/* 返信プレビュー */
+
+.replyPreview {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    width: 100%;
+    min-width: 0;
+    margin-bottom: 8px;
+    padding: 5px 0 5px 10px;
+
+    border: none;
+    border-left: 2px solid currentColor;
+    background: transparent;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+.replyPreview:disabled {
+    cursor: default;
+}
+
+.replyPreview:not(:disabled):hover {
+    opacity: 1;
+}
+
+.replySender {
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.replyText {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+    font-size: 12px;
+}
+
+.retracted {
+    font-size: 12px;
+    font-style: italic;
+    color: var(--thync-text-muted);
+}
+
+/* アニメーションを減らす設定 */
+
+@media (prefers-reduced-motion: reduce) {
+    .bubble {
+        transition: none;
+    }
+}
+
+
+/* =====================================
+   連続メッセージのグループ表示
+   ===================================== */
+
+/* 連投時はメッセージの間隔を縮める */
+.message.grouped {
+    margin-top: -12px;
+}
+
+/* アイコンの領域は残し、表示だけ隠す */
+.avatarHidden {
+    visibility: hidden;
+}
+
+
+/* =====================================
+   返信ジャンプ時のハイライト
+   ===================================== */
+
+/* ライトモード */
+.highlighted .bubble {
+    animation: thync-message-focus 1.8s ease-out;
+}
+
+@keyframes thync-message-focus {
+    0% {
+        box-shadow:
+            0 0 0 0 rgba(85, 140, 125, 0.45);
+    }
+
+    25% {
+        box-shadow:
+            0 0 0 5px rgba(85, 140, 125, 0.24);
+    }
+
+    100% {
+        box-shadow:
+            0 0 0 0 rgba(85, 140, 125, 0);
+    }
+}
+
+/* ダークモード */
+[data-theme="dark"] .highlighted .bubble {
+    animation-name: thync-message-focus-dark;
+}
+
+@keyframes thync-message-focus-dark {
+    0% {
+        box-shadow:
+            0 0 0 0 rgba(160, 195, 185, 0.50);
+    }
+
+    25% {
+        box-shadow:
+            0 0 0 5px rgba(160, 195, 185, 0.25);
+    }
+
+    100% {
+        box-shadow:
+            0 0 0 0 rgba(160, 195, 185, 0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .highlighted .bubble {
+        animation: none;
+        outline: 2px solid var(--thync-text-secondary);
+        outline-offset: 3px;
+    }
+}
+
+
+/* =====================================
+   返信ジャンプ：行全体のハイライト
+   ===================================== */
+
+/* ハイライト時の背景 */
+.message.highlighted {
+    position: relative;
+
+    animation:
+        thync-row-highlight 1.8s ease-out both;
+}
+
+
+
+/* ライトモード：ごく淡い水色 */
+@keyframes thync-row-highlight {
+    0% {
+        background-color: rgba(171, 238, 242, 0.17);
+    }
+
+    35% {
+        background-color: rgba(171, 238, 242, 0.09);
+    }
+
+    100% {
+        background-color: transparent;
+    }
+}
+
+/* ダークモード：控えめな水色 */
+@keyframes thync-row-highlight-dark {
+    0% {
+        background-color: rgba(171, 238, 242, 0.06);
+    }
+
+    35% {
+        background-color: rgba(171, 238, 242, 0.05);
+    }
+
+    100% {
+        background-color: transparent;
+    }
+}
+
+
+
+@media (prefers-reduced-motion: reduce) {
+    .message.highlighted {
+        animation: none;
+        background-color: rgba(171, 238, 242, 0.20);
+    }
+}

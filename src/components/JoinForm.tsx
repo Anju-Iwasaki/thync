@@ -1,29 +1,145 @@
-'use client';
-// 参加画面  担当：大槻
-// ニックネームを入れてonJoinを呼ぶだけ。参加の書き込みは入れ物（RoomShell）が行う
-import { useState } from 'react';
 
-export type JoinFormProps = {
-  topic: string;                                // 部屋の議題
-  onJoin: (nickname: string) => Promise<void>;  // 失敗すると例外を投げる
+"use client";
+
+import { useState, type FormEvent } from "react";
+import styles from "./JoinForm.module.css";
+
+type JoinFormProps = {
+    roomId: string;
+    topic?: string;
+    onJoin: (
+        roomId: string,
+        nickname: string
+    ) => void | Promise<void>;
 };
 
-export default function JoinForm({ topic, onJoin }: JoinFormProps) {
-  // ここから大書き直してよい（今は最低限動く形）
-  const [nickname, setNickname] = useState('');
-  const [error, setError] = useState('');
+export default function JoinForm({
+    roomId,
+    topic,
+    onJoin,
+}: JoinFormProps) {
+    const [nickname, setNickname] = useState("");
+    const [joining, setJoining] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-  return (
-    <main style={{ padding: 16 }}>
-      <h1>{topic}</h1>
-      <input value={nickname} onChange={(e) => setNickname(e.target.value)} placeholder="ニックネーム" />
-      <button
-        onClick={() => onJoin(nickname.trim()).catch((e) => setError(e instanceof Error ? e.message : JSON.stringify(e)))}
-        disabled={!nickname.trim()}
-      >
-        参加
-      </button>
-      <pre>{error}</pre>
-    </main>
-  );
+    const handleSubmit = async (
+        event: FormEvent<HTMLFormElement>
+    ) => {
+        event.preventDefault();
+
+        const name = nickname.trim();
+
+        if (!name || joining) return;
+
+        setJoining(true);
+        setError(null);
+
+        try {
+            await onJoin(roomId, name);
+        } catch {
+            setError(
+                "参加できませんでした。もう一度お試しください。"
+            );
+        } finally {
+            setJoining(false);
+        }
+    };
+
+    return (
+        <main className={styles.page}>
+            <div className={styles.container}>
+                <div className={styles.brand}>
+                    <h1 className={styles.logo}>THYNC</h1>
+                    <p className={styles.tagline}>
+                        THINK × SYNC
+                    </p>
+                </div>
+
+                <section
+                    className={styles.card}
+                    aria-labelledby="join-title"
+                >
+                    <div className={styles.cardHeader}>
+                        <h2
+                            id="join-title"
+                            className={styles.title}
+                        >
+                            グループに参加
+                        </h2>
+
+                        <p className={styles.description}>
+                            ニックネームを入力して、
+                            話し合いに参加しましょう。
+                        </p>
+                    </div>
+
+                    {topic && (
+                        <div className={styles.roomInfo}>
+                            <span className={styles.roomLabel}>
+                                参加するグループ
+                            </span>
+                            <strong className={styles.roomTitle}>
+                                {topic}
+                            </strong>
+                        </div>
+                    )}
+
+                    <form
+                        className={styles.form}
+                        onSubmit={handleSubmit}
+                    >
+                        <label
+                            htmlFor="join-nickname"
+                            className={styles.label}
+                        >
+                            ニックネーム
+                        </label>
+
+                        <input
+                            id="join-nickname"
+                            className={styles.input}
+                            type="text"
+                            autoComplete="nickname"
+                            maxLength={30}
+                            placeholder="名前を入力"
+                            value={nickname}
+                            onChange={(event) => {
+                                setNickname(event.target.value);
+                                if (error) setError(null);
+                            }}
+                            disabled={joining}
+                            required
+                        />
+
+                        <p className={styles.hint}>
+                            グループ内でほかの参加者に表示されます。
+                        </p>
+
+                        {error && (
+                            <p
+                                className={styles.error}
+                                role="alert"
+                            >
+                                {error}
+                            </p>
+                        )}
+
+                        <button
+                            className={styles.submit}
+                            type="submit"
+                            disabled={!nickname.trim() || joining}
+                        >
+                            {joining
+                                ? "参加しています..."
+                                : "参加する"}
+                        </button>
+                    </form>
+                </section>
+
+                <p className={styles.footer}>
+                    いつもの会話から、みんなの考えを整理する。
+                </p>
+            </div>
+        </main>
+    );
 }
